@@ -1,0 +1,34 @@
+poredec.backend package
+=======================
+
+.. automodule:: poredec.backend
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+poredec.backend.loop\_analyzer module
+-------------------------------------
+
+.. automodule:: poredec.backend.loop_analyzer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.backend.structure\_converter module
+-------------------------------------------
+
+.. automodule:: poredec.backend.structure_converter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.backend.structure\_converter\_mixin module
+--------------------------------------------------
+
+.. automodule:: poredec.backend.structure_converter_mixin
+   :members:
+   :undoc-members:
+   :show-inheritance:

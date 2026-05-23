@@ -1,0 +1,18 @@
+poredec.utils package
+=====================
+
+.. automodule:: poredec.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+poredec.utils.display module
+----------------------------
+
+.. automodule:: poredec.utils.display
+   :members:
+   :undoc-members:
+   :show-inheritance:

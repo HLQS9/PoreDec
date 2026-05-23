@@ -1,0 +1,66 @@
+poredec.models package
+======================
+
+.. automodule:: poredec.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+poredec.models.cfg module
+-------------------------
+
+.. automodule:: poredec.models.cfg
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.models.expr module
+--------------------------
+
+.. automodule:: poredec.models.expr
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.models.insn module
+--------------------------
+
+.. automodule:: poredec.models.insn
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.models.lift\_mode module
+--------------------------------
+
+.. automodule:: poredec.models.lift_mode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.models.loop module
+--------------------------
+
+.. automodule:: poredec.models.loop
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.models.reduce\_event module
+-----------------------------------
+
+.. automodule:: poredec.models.reduce_event
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.models.stmt module
+--------------------------
+
+.. automodule:: poredec.models.stmt
+   :members:
+   :undoc-members:
+   :show-inheritance:

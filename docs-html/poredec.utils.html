@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.utils package &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="prev" title="poredec.models package" href="poredec.models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="poredec.html">poredec package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.DecompileOptions"><code class="docutils literal notranslate"><span class="pre">DecompileOptions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.decompile"><code class="docutils literal notranslate"><span class="pre">decompile()</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="poredec.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="poredec.backend.html">poredec.backend package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.frontend.html">poredec.frontend package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.models.html">poredec.models package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">poredec.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.utils.display">poredec.utils.display module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="poredec.html">poredec package</a></li>
+      <li class="breadcrumb-item active">poredec.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/poredec.utils.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-poredec.utils">
+<span id="poredec-utils-package"></span><h1>poredec.utils package<a class="headerlink" href="#module-poredec.utils" title="Link to this heading"></a></h1>
+<p>反编译器应用工具</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-poredec.utils.display">
+<span id="poredec-utils-display-module"></span><h2>poredec.utils.display module<a class="headerlink" href="#module-poredec.utils.display" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.utils.display.CFGDisplayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.utils.display.</span></span><span class="sig-name descname"><span class="pre">CFGDisplayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formatter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.utils.display.CodeFormatter" title="poredec.utils.display.CodeFormatter"><span class="pre">CodeFormatter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/utils/display.html#CFGDisplayer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CFGDisplayer" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>控制流图可视化工具</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.utils.display.CFGDisplayer.draw_cfg">
+<span class="sig-name descname"><span class="pre">draw_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">list[int]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/utils/display.html#CFGDisplayer.draw_cfg"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CFGDisplayer.draw_cfg" title="Link to this definition"></a></dt>
+<dd><p>把CFG图转化为PNG格式的图片，并保存到graph_path</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (class:<cite>ControlFlowGraph</cite>) -- 控制流图</p></li>
+<li><p><strong>graph_path</strong> -- 图片保存路径</p></li>
+<li><p><strong>highlights</strong> -- 高亮的节点地址列表</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.utils.display.CFGDisplayer.format_cfg">
+<span class="sig-name descname"><span class="pre">format_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AGraph</span></span></span><a class="reference internal" href="_modules/poredec/utils/display.html#CFGDisplayer.format_cfg"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CFGDisplayer.format_cfg" title="Link to this definition"></a></dt>
+<dd><p>将控制流图转化为文本形式</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cfg</strong> -- 控制流图</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>文本格式的控制流图，图中的每一个节点为对应控制流图节点的文本表示</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.utils.display.CodeFormatter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.utils.display.</span></span><span class="sig-name descname"><span class="pre">CodeFormatter</span></span><a class="reference internal" href="_modules/poredec/utils/display.html#CodeFormatter"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CodeFormatter" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>代码格式化工具，用于将指令、语句转化为文本</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.utils.display.CodeFormatter.INDENT">
+<span class="sig-name descname"><span class="pre">INDENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span>&#160; <span class="pre">'</span></em><a class="headerlink" href="#poredec.utils.display.CodeFormatter.INDENT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.utils.display.CodeFormatter.PPP">
+<span class="sig-name descname"><span class="pre">PPP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;pypcode.PcodePrettyPrinter</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#poredec.utils.display.CodeFormatter.PPP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.utils.display.CodeFormatter.configure">
+<span class="sig-name descname"><span class="pre">configure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no_pcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simplify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/utils/display.html#CodeFormatter.configure"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CodeFormatter.configure" title="Link to this definition"></a></dt>
+<dd><p>全局配置
+:param no_pcode: 是否不显示Pcode, 开启后格式化PcodeStmt时仅打印代码注释, 默认为False
+:param simplify: 是否简化反编译结果，开启后仅保留控制流结构, 默认为False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.utils.display.CodeFormatter.fmt_insns">
+<span class="sig-name descname"><span class="pre">fmt_insns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><span class="pre">Insn</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/utils/display.html#CodeFormatter.fmt_insns"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CodeFormatter.fmt_insns" title="Link to this definition"></a></dt>
+<dd><p>格式化指令列表</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.utils.display.CodeFormatter.fmt_stmts">
+<span class="sig-name descname"><span class="pre">fmt_stmts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stmts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span>&#160; <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/utils/display.html#CodeFormatter.fmt_stmts"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.utils.display.CodeFormatter.fmt_stmts" title="Link to this definition"></a></dt>
+<dd><p>格式化语句列表</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="poredec.models.html" class="btn btn-neutral float-left" title="poredec.models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

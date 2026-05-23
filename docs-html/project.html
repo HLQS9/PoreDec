@@ -1,0 +1,1004 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目: 简易反编译器的实现 &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="PoREDec反编译器概览" href="overview.html" />
+    <link rel="prev" title="PoREDec文档" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">项目: 简易反编译器的实现</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">物料清单</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">背景介绍</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">控制流图构建</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">结构化代码生成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#poredec">PoREDec框架</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">准备工作</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">环境准备和测试</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vscode">VSCode安装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vscode-python">VSCode Python解释器配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">VSCode调试环境配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">【可选】VSCode 图片查看扩展安装</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#task1">任务1: 控制流图构建</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task2">任务2: 结构化代码生成</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">测试和缺陷分析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task1-diag">任务一测试和缺陷分析</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">任务二测试和缺陷分析</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id16">评分标准</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">报告模板</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">项目: 简易反编译器的实现</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/project.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>项目: 简易反编译器的实现<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>在本项目中你将基于PoREDec框架实现一个简易的反编译器。
+通过项目实践，你能更深层次地理解课程中介绍的反编译原理，包括:
+1. 反编译器如何构建控制流图
+2. 反编译器如何如何通过分析控制流图，识别和生成高级语言中结构化代码，如``while``。</p>
+<section id="id2">
+<h2>物料清单<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>以下是项目仓库的结构:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── benchmarks # 测试样例
+├── docs-html # 文档, 用网页浏览器打开index.html即可查看实验手册
+├── Makefile # 用于运行测试用例
+└── poredec # 反编译器源代码
+</pre></div>
+</div>
+<p>其中需要特别注意的是 <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> 文件夹和 <code class="docutils literal notranslate"><span class="pre">poredec</span></code> 文件夹。</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt><strong>poredec</strong> 文件夹: 包含了反编译器的所有源码文件，其中有两个源代码文件需要在本项目中实现</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">frontend/cfg_builder.py</span></code> : 对应 <a class="reference internal" href="#task1"><span class="std std-ref">任务1: 控制流图构建</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backend/structure_converter.py</span></code> : 对应 <a class="reference internal" href="#task2"><span class="std std-ref">任务2: 结构化代码生成</span></a></p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>benchmarks</strong> 文件夹: 包含了检验任务完成结果所需的物料，主要有三个部分</dt><dd><ol class="arabic simple">
+<li><p>tasks.csv: 目标函数列表，需要在这些函数上完成控制流图生成和结构化代码生成任务</p></li>
+<li><p>binaries: 目标二进制程序</p></li>
+<li><dl class="simple">
+<dt>references: 两个任务的参考结果，用于 <a class="reference internal" href="#testing"><span class="std std-ref">测试和缺陷分析</span></a></dt><dd><ul class="simple">
+<li><p>.png后缀的文件: 目标函数的控制流图生成参考结果</p></li>
+<li><p>.c后缀的文件: 目标函数的结构化代码生成参考结果</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p><strong>docs-html</strong> 文件夹: 包含了本项目的文档，使用网页浏览器打开 <code class="docutils literal notranslate"><span class="pre">index.html</span></code> 即可查看实验手册。</p></li>
+<li><p><strong>Makefile</strong>: 用于运行测试用例的脚本，使用 <code class="docutils literal notranslate"><span class="pre">make</span></code> 命令即可运行所有测试用例。</p></li>
+</ol>
+</section>
+<section id="id3">
+<h2>背景介绍<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>反编译器是一种将机器码转换为高级语言代码的工具。反编译前端负责将机器码转换为中间表示(IR)，后端负责将IR转换为高级语言代码。</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/decompiler.png"><img alt="反编译器架构" src="_images/decompiler.png" style="width: 80%;" />
+</a>
+</figure>
+<section id="id4">
+<h3>控制流图构建<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>反编译器前端的一个重要任务是构建控制流图 (CFG)，控制流图是一种图结构，它可以表示程序的控制流转移关系。
+因此，构建控制流图对于代码分析优化和高级语言代码生成非常重要。</p>
+<p>控制流图是一个有向图，其节点也称为基本块；其边表示程序执行的可能方向。因此构建控制流图有两个主要步骤: 识别基本块和连接基本块。</p>
+<p>首先为了识别基本块，我们先来了解一下什么是基本块。
+基本块是一组连续的指令，其中只有一个入口和一个出口。
+入口称为基本块的起始指令，出口称为基本块的结束指令，基本块也可以只包含一条指令，该指令既是起始指令又是终止指令。
+因此，识别基本块的关键是识别基本块的起始指令和终止指令。
+具体来说，起始指令的特点是没有前继指令或前继指令中包含终止指令，终止指令的特点是没有后继指令或后继指令中包含起始指令。
+通过分析指令的跳转关系，我们可以识别基本块的起始指令和终止指令，从而识别基本块。</p>
+<p>在识别基本块之后，我们需要连接基本块。这一步仅需要将终止指令所在基本块与其后继指令所在基本块连接起来即可。</p>
+</section>
+<section id="id5">
+<h3>结构化代码生成<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>反编译器后端为了产生高级语言代码，需要从控制流图中恢复高级语言代码中的代码结构，包括循环、条件语句等。这一过程称为结构化代码生成。</p>
+<p>结构化代码生成的关键在于实现化简规则，化简规则包括两方面能力：
+一是从控制流图中识别高级语言代码中的结构，
+二是通过化简将识别到的包含多个节点的控制流结构转换为简单的包含高级语言代码结构的节点。</p>
+<p>由于不同的高级语言代码的结构会产生不同的控制流结构，因此结构化代码生成需要使用不同的化简规则。
+根据规则的通用性，化简规则可以分为两类：针对性规则和通用规则。</p>
+<p><strong>针对性规则</strong> 是针对特定的高级语言代码结构设计的规则，如循环、条件语句等，其目的在于将控制流结构转化为不包含goto语句的高级语言代码结构。
+之所以不产生goto是因为在许多高级语言编程场景中goto语句会降低代码的可读性。</p>
+<p><strong>通用规则</strong> 也称为goto规则，是可以确保控制流图完全化简——化简到只剩下一个节点的化简规则。引入通用规则是因为一些复杂的高级语言代码实现，如嵌套循环，会产生复杂的控制流图，无法被针对性规则完全化简。
+具体来说通用规则将控制流图中的任意节点及其后继节点化简为含有goto的高级语言代码，而不会破坏代码语义。</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/cfg-example.png"><img alt="控制流图" src="_images/cfg-example.png" style="width: 40%;" />
+</a>
+</figure>
+<p>例如，上图所示的控制流图可以使用通用规则完全化简为以下代码：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="nl">𝐶_1</span><span class="p">:</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">𝑐_1</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝑁_1</span><span class="p">;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝐶_2</span><span class="p">;</span>
+<span class="nl">𝑁_1</span><span class="p">:</span><span class="w"> </span><span class="n">n_1</span><span class="p">;</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝐶_1</span><span class="p">;</span>
+<span class="nl">𝐶_2</span><span class="p">:</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">𝑐_2</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝑁_1</span><span class="p">;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝑁_3</span><span class="p">;</span>
+<span class="nl">𝑁_3</span><span class="p">:</span><span class="w"> </span><span class="n">n_3</span><span class="p">;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">𝑐_3</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝐶_1</span><span class="p">;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">𝑁_4</span><span class="p">;</span>
+<span class="nl">𝑁_2</span><span class="p">:</span><span class="w"> </span><span class="n">n_2</span><span class="p">;</span>
+<span class="nl">𝑁_4</span><span class="p">:</span><span class="w"> </span><span class="n">n_4</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="poredec">
+<h3>PoREDec框架<a class="headerlink" href="#poredec" title="Link to this heading"></a></h3>
+<p>PoREDec是一个基于Python的教学用反编译框架，它实现了基础的反编译功能组建。
+在本项目中，我们将基于PoREDec框架实现反编译器的控制流图构建和结构化代码生成功能。</p>
+<p><a class="reference internal" href="overview.html#overview"><span class="std std-ref">PoREDec反编译器概览</span></a> 介绍了PoREDec框架的组成和工作流程。</p>
+</section>
+</section>
+<section id="id6">
+<h2>准备工作<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>本部分介绍了项目所需的准备工作。</p>
+<section id="id7">
+<h3>环境准备和测试<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>首先从git上拉取本次PJ的代码仓库。</p>
+<p>接下来，我们来测试环境是否可用。</p>
+<ol class="arabic simple">
+<li><p>启用venv环境: 在虚拟机中打开终端，输入 <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/l8_env/bin/activate</span></code> 输入完成后能够看到Prompt中显示 <code class="docutils literal notranslate"><span class="pre">(l8_env)</span></code> 字样，这说明venv环境已经启用。注意：后续测试时均需确保venv环境已提前启用，否则测试会报错。</p></li>
+</ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/ip-addr.png"><img alt="启用venv环境" src="_images/ip-addr.png" style="width: 40%;" />
+</a>
+</figure>
+<ol class="arabic simple" start="2">
+<li><p>测试代码: 在虚拟机中进入之前拉取的代码仓库，输入 <code class="docutils literal notranslate"><span class="pre">make</span></code> 命令，</p></li>
+</ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/ip-addr.png"><img alt="查询虚拟机IP" src="_images/ip-addr.png" style="width: 40%;" />
+</a>
+</figure>
+</section>
+<section id="vscode">
+<h3>VSCode安装<a class="headerlink" href="#vscode" title="Link to this heading"></a></h3>
+<p>首先，我将介绍如何配置Visual Studio Code (VSCode)。</p>
+<p>虚拟机中已经安装好了VSCode，可以直接使用。如果你想在宿主机本地环境中使用VSCode，可以参考以下步骤连接到虚拟机环境。</p>
+<ol class="arabic simple">
+<li><p>从 <a class="reference external" href="https://code.visualstudio.com">官网</a> 下载并安装Visual Studio Code (VSCode)</p></li>
+<li><p>安装远程开发扩展：打开VSCode，点击以下链接安装VSCode扩展</p></li>
+<li><dl class="simple">
+<dt>连接到虚拟机环境</dt><dd><ul class="simple">
+<li><p>确保虚拟机打开并运行，点击VSCode左下角的绿色按钮，选择 <code class="docutils literal notranslate"><span class="pre">Remote-SSH:</span> <span class="pre">Connect</span> <span class="pre">to</span> <span class="pre">Host...</span></code> 或 <code class="docutils literal notranslate"><span class="pre">链接到主机</span></code></p></li>
+<li><p>在弹出的提示窗口输入 <code class="docutils literal notranslate"><span class="pre">pore&#64;&lt;虚拟机IP&gt;</span></code> 后按下回车连接。其中 <code class="docutils literal notranslate"><span class="pre">&lt;虚拟机IP&gt;</span></code> 在虚拟机终端中输入 <code class="docutils literal notranslate"><span class="pre">ip</span> <span class="pre">addr</span></code> 命令查询，如下图所示。</p></li>
+<li><p>在弹出的提示窗口中输入密码 <code class="docutils literal notranslate"><span class="pre">pore</span></code> 连接到虚拟机环境。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<figure class="align-center" id="id18">
+<a class="reference internal image-reference" href="_images/ip-addr.png"><img alt="查询虚拟机IP" src="_images/ip-addr.png" style="width: 40%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">查询虚拟机IP</span><a class="headerlink" href="#id18" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>在打开虚拟机中的VSCode，或远程连接到虚拟机环境后，你可以在VSCode中打开位于虚拟机中的项目文件夹 <code class="docutils literal notranslate"><span class="pre">PoREDec</span></code> ，并继续进行下面的步骤。
+如果你远程连接到虚拟机环境，可能需要在虚拟机中安装 <strong>预览版</strong> <code class="docutils literal notranslate"><span class="pre">Python插件</span> <span class="pre">vscode:extension/ms-python.python</span></code> 。</p>
+</section>
+<section id="vscode-python">
+<h3>VSCode Python解释器配置<a class="headerlink" href="#vscode-python" title="Link to this heading"></a></h3>
+<p>为了方便后续实验，建议进一步配置Python环境。</p>
+<ol class="arabic simple">
+<li><p>首先打开任意.py结尾的文件，例如 <code class="docutils literal notranslate"><span class="pre">poredec/__init__.py</span></code>。</p></li>
+<li><p>点击右下角的Python版本选择器</p></li>
+<li><p>在提示框中选择 <code class="docutils literal notranslate"><span class="pre">输入解释器路径...</span></code></p></li>
+<li><p>输入 <code class="docutils literal notranslate"><span class="pre">/home/pore/l8_env/bin/python</span></code></p></li>
+</ol>
+<p>完成Python环境配置后输入 <code class="docutils literal notranslate"><span class="pre">Ctrl+&lt;键盘上Tab上方的按键&gt;</span></code> 打开终端，可以在Prompt上方看到 <code class="docutils literal notranslate"><span class="pre">(l8_env)</span></code> 字样，这表示Python环境已经切换成功。
+这一步骤有两个用途: 1. 在代码编写时提供正确的代码引用; 2. 从VSCode启动终端会自动启用venv环境。</p>
+</section>
+<section id="id9">
+<h3>VSCode调试环境配置<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p>调试可以帮助理解代码和分析代码异常，为了方便后续开发中的错误诊断，建议在VSCode中配置调试环境。以下是具体步骤:</p>
+<ol class="arabic simple">
+<li><p>创建launch.json文件: 在VSCode中点击左侧的调试按钮，点击 <code class="docutils literal notranslate"><span class="pre">创建launch.json文件</span></code> 按钮，选择 <code class="docutils literal notranslate"><span class="pre">Python</span></code> 作为环境。</p></li>
+</ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/vscode-debug-1.png"><img alt="创建launch.json文件" src="_images/vscode-debug-1.png" style="width: 40%;" />
+</a>
+</figure>
+<ol class="arabic simple" start="2">
+<li><p>填写调试配置</p></li>
+</ol>
+<p>以下是调试配置文件的示例，其中包含了两个调试配置，分别用于调试所有测例和调试单个测例。
+你可以将以下代码复制到上一步创建的 <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code> 文件中，覆盖原有的内容。</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;调试所有测例&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;poredec&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;console&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integratedTerminal&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;--tasks&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;benchmarks/tasks.csv&quot;</span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;调试单个测例&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;poredec&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;console&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integratedTerminal&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;--binary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;benchmarks/binaries/httpd&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;--function&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0X4E934&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>选择调试配置: 由于我们创建了两个调试配置，因此在调试时需要选择要使用的调试配置。点击左侧的调试按钮，点击 <code class="docutils literal notranslate"><span class="pre">选择要运行的配置</span></code> 按钮，选择 <code class="docutils literal notranslate"><span class="pre">调试所有测例</span></code> 或 <code class="docutils literal notranslate"><span class="pre">调试单个测例</span></code>。</p></li>
+</ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/vscode-debug-3.png"><img alt="选择调试配置" src="_images/vscode-debug-3.png" style="width: 40%;" />
+</a>
+</figure>
+<ol class="arabic simple" start="4">
+<li><p>添加代码断点: 在代码中添加断点，点击代码行号左侧的空白处，或者在代码行上右键点击 <code class="docutils literal notranslate"><span class="pre">添加断点</span></code> 按钮。</p></li>
+</ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/vscode-debug-4.png"><img alt="添加代码断点" src="_images/vscode-debug-4.png" style="width: 40%;" />
+</a>
+</figure>
+<ol class="arabic simple" start="5">
+<li><p>开始调试: 点static/vscode-debug-5.png击左侧的调试按钮，点击 <code class="docutils literal notranslate"><span class="pre">开始调试</span></code> 按钮，或者直接按下 <code class="docutils literal notranslate"><span class="pre">F5</span></code> 键开始调试。</p></li>
+</ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/vscode-debug-5.png"><img alt="开始调试" src="_images/vscode-debug-5.png" style="width: 40%;" />
+</a>
+</figure>
+<p>更多调试方法请参考VSCode官方文档。</p>
+</section>
+<section id="id10">
+<h3>【可选】VSCode 图片查看扩展安装<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p>后续实验中的部分输出以图片形式呈现，为了方便在VSCode中直接查看图片，建议在VSCode中安装Image Preview插件</p>
+</section>
+</section>
+<section id="task1">
+<span id="id11"></span><h2>任务1: 控制流图构建<a class="headerlink" href="#task1" title="Link to this heading"></a></h2>
+<p>根据代码模版，结合课上介绍的知识及代码注释，实现控制流图构建功能。控制流图中的基本块必须满足以下要求：同一处地址的指令不会同时出现在多个基本块中。</p>
+<figure class="align-center" id="id19">
+<a class="reference internal image-reference" href="_images/cfg-build-example.png"><img alt="控制流图构建示例" src="_images/cfg-build-example.png" style="width: 80%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">控制流图构建示例</span><a class="headerlink" href="#id19" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>代码模版 <a class="reference internal" href="poredec.frontend.html#module-poredec.frontend.cfg_builder" title="poredec.frontend.cfg_builder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">poredec.frontend.cfg_builder</span></code></a> 中包含了控制流图构建器的类定义，以及构建控制流图的主要步骤，请仔细阅读并实现。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="sd">控制流图构建器</span>
+<span class="linenos"> 3</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 4</span><span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="linenos"> 5</span><span class="c1"># pylint: disable=unused-argument</span>
+<span class="linenos"> 6</span><span class="c1"># pylint: disable=fixme</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">..models.insn</span><span class="w"> </span><span class="kn">import</span> <span class="n">DisasInsn</span>
+<span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">..models.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">ControlFlowGraph</span>
+<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">.lifter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lifter</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CFGBuilder&quot;</span><span class="p">]</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">CFGBuilder</span><span class="p">:</span>
+<span class="linenos">17</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;控制流图构建器&quot;&quot;&quot;</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lifter</span><span class="p">:</span> <span class="n">Lifter</span><span class="p">):</span>
+<span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">lifter</span> <span class="o">=</span> <span class="n">lifter</span>  <span class="c1"># 反汇编器</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="k">def</span><span class="w"> </span><span class="nf">build_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry_addr</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlFlowGraph</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;从给定的函数起始地址开始，构建完整的函数控制流图。</span>
+<span class="linenos">24</span><span class="sd">        控制流图的节点为基本块class:`CFGNode`，边表示控制流转移。</span>
+<span class="linenos">25</span><span class="sd">        每个节点包含一到多条汇编指令class:`DisasInsn`。</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="sd">        :param entry_addr: 函数的起始地址</span>
+<span class="linenos">28</span><span class="sd">        :return: 构建完成的控制流图</span>
+<span class="linenos">29</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">30</span>        <span class="c1"># 创建一个空的控制流图</span>
+<span class="linenos">31</span>        <span class="n">cfg</span> <span class="o">=</span> <span class="n">ControlFlowGraph</span><span class="p">()</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">34</span><span class="sd">        步骤1: 从入口地址开始反汇编，依次获取所有指令</span>
+<span class="linenos">35</span><span class="sd">        下面代码演示了如何在给定地址(addr)处反汇编一条指令</span>
+<span class="linenos">36</span><span class="sd">        &gt;&gt;&gt; insn = self.lifter.disassemble_at(addr)</span>
+<span class="linenos">37</span><span class="sd">        insn中包含了反汇编得到的指令信息，例如insn.succs表示该指令后继指令地址列表。更多信息见class:`DisasInsn`</span>
+<span class="linenos">38</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">39</span>        <span class="n">insns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DisasInsn</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">40</span>        <span class="c1"># TODO: 实现步骤1</span>
+<span class="linenos">41</span>        <span class="n">insns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lifter</span><span class="o">.</span><span class="n">disassemble_at</span><span class="p">(</span><span class="n">entry_addr</span><span class="p">))</span>  <span class="c1"># 本行代码仅用于演示</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">44</span><span class="sd">        步骤2: 识别基本块的起始指令和终止指令。</span>
+<span class="linenos">45</span><span class="sd">        起始指令：有&gt;1或0条前继指令，或前继指令中包含终止指令</span>
+<span class="linenos">46</span><span class="sd">        终止指令：有&gt;1或0条后继指令，或后继指令中包含起始指令</span>
+<span class="linenos">47</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">48</span>        <span class="c1"># TODO: 实现步骤2</span>
+<span class="linenos">49</span>
+<span class="linenos">50</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">51</span><span class="sd">        步骤3: 构造基本块, 基本块包含从起始指令到下一条终止指令间的所有指令。</span>
+<span class="linenos">52</span><span class="sd">        下面代码演示了如何创建一个基本块, node_insns为基本块中的所有指令</span>
+<span class="linenos">53</span><span class="sd">        &gt;&gt;&gt; node_addr = node_insns[0].address # 获取基本块的起始地址</span>
+<span class="linenos">54</span><span class="sd">        &gt;&gt;&gt; node = CFGNode(node_addr, node_insns) # 创建基本块</span>
+<span class="linenos">55</span><span class="sd">        创建的基本块可以通过下面代码添加到控制流图中</span>
+<span class="linenos">56</span><span class="sd">        &gt;&gt;&gt; cfg.add_node(node)</span>
+<span class="linenos">57</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">58</span>        <span class="c1"># TODO: 实现步骤3</span>
+<span class="linenos">59</span>        <span class="n">entry_node</span> <span class="o">=</span> <span class="n">CFGNode</span><span class="p">(</span><span class="n">entry_addr</span><span class="p">,</span> <span class="n">insns</span><span class="p">)</span>
+<span class="linenos">60</span>        <span class="n">cfg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">entry_node</span><span class="p">)</span>  <span class="c1"># 本行代码仅用于演示</span>
+<span class="linenos">61</span>
+<span class="linenos">62</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">63</span><span class="sd">        步骤4: 根据控制流连接基本块</span>
+<span class="linenos">64</span><span class="sd">        下面代码演示了如何添加控制流图的边</span>
+<span class="linenos">65</span><span class="sd">        &gt;&gt;&gt; cfg.add_edge(u, v) # 添加一条从u到v的边</span>
+<span class="linenos">66</span><span class="sd">        &gt;&gt;&gt; cfg.add_edge(u, v, label=&quot;T&quot;) # 可以指定边的标签，标签会在画图时显示</span>
+<span class="linenos">67</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">68</span>        <span class="c1"># TODO: 实现步骤4</span>
+<span class="linenos">69</span>
+<span class="linenos">70</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">71</span><span class="sd">        步骤5: 设置控制流图的入口节点</span>
+<span class="linenos">72</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">73</span>        <span class="c1"># TODO: 实现步骤5: 只需要调用cfg.set_entry方法设置控制流图的入口节点</span>
+<span class="linenos">74</span>        <span class="n">cfg</span><span class="o">.</span><span class="n">set_entry</span><span class="p">(</span><span class="n">entry_node</span><span class="p">)</span>  <span class="c1"># 本行代码仅用于演示</span>
+<span class="linenos">75</span>
+<span class="linenos">76</span>        <span class="k">assert</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;控制流图中没有节点&quot;</span>
+<span class="linenos">77</span>        <span class="k">assert</span> <span class="n">cfg</span><span class="o">.</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;需要设置控制流图的入口节点&quot;</span>
+<span class="linenos">78</span>        <span class="k">return</span> <span class="n">cfg</span>
+</pre></div>
+</div>
+</section>
+<section id="task2">
+<span id="id12"></span><h2>任务2: 结构化代码生成<a class="headerlink" href="#task2" title="Link to this heading"></a></h2>
+<p>在这个任务中你需要基于模版 <a class="reference internal" href="poredec.backend.html#module-poredec.backend.structure_converter" title="poredec.backend.structure_converter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">structure_converter</span></code></a> 实现8条化简规则，包括2条通用规则和6条针对性规则。</p>
+<p>模版中已经实现了化简控制流图的框架，包括 <a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.reduce_cfg" title="poredec.backend.structure_converter.StructureConverter.reduce_cfg"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reduce_cfg()</span></code></a> , <a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.reduce_node_by_goto" title="poredec.backend.structure_converter.StructureConverter.reduce_node_by_goto"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reduce_node_by_goto()</span></code></a> , <a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule" title="poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reduce_node_by_rule()</span></code></a> , <a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.completely_reduce_loop" title="poredec.backend.structure_converter.StructureConverter.completely_reduce_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">completely_reduce_loop()</span></code></a> 。
+你需要在代码模版中实现其余方法，其中每一个方法代表一个具体的化简规则。</p>
+<p>通用规则:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_sequence" title="poredec.backend.structure_converter.StructureConverter.try_reduce_goto_sequence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_goto_sequence()</span></code></a> : 化简后继数量为1的节点，产生goto语句</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_branch" title="poredec.backend.structure_converter.StructureConverter.try_reduce_goto_branch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_goto_branch()</span></code></a> : 化简后继数量为2的节点，化简为分支体为goto语句的if-else结构</p></li>
+</ul>
+<p>针对性规则:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_sequence" title="poredec.backend.structure_converter.StructureConverter.try_reduce_sequence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_sequence()</span></code></a> : 化简顺序结构</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_while_true" title="poredec.backend.structure_converter.StructureConverter.try_reduce_while_true"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_while_true()</span></code></a> : 化简为while(1)结构</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_do_while" title="poredec.backend.structure_converter.StructureConverter.try_reduce_do_while"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_do_while()</span></code></a> : 化简do-while结构</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if" title="poredec.backend.structure_converter.StructureConverter.try_reduce_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_if()</span></code></a> : 化简if结构</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if_continue" title="poredec.backend.structure_converter.StructureConverter.try_reduce_if_continue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_if_continue()</span></code></a> : 化简if-continue结构</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if_else" title="poredec.backend.structure_converter.StructureConverter.try_reduce_if_else"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_reduce_if_else()</span></code></a> : 化简if-else语句</p></li>
+</ul>
+<p>建议先实现通用规则，确保通用规则能够完全化简控制流图，然后再实现针对性规则减少控制流图中的goto语句。</p>
+<p>在实现化简规则时，你会使用 <a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin" title="poredec.backend.structure_converter_mixin.StructureConverterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureConverterMixin</span></code></a> 类中的四类方法。</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>获取控制流图节点的前继节点和后继节点</dt><dd><ul>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.successors" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.successors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">successors()</span></code></a> : 获取后继节点列表</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.predecessors" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.predecessors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predecessors()</span></code></a> : 获取前驱节点列表</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>循环分析</dt><dd><ul>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_for" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_loop_for()</span></code></a> : 获取节点所在的循环信息</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_loop_header()</span></code></a> : 判断节点是否为循环头</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>生成伪高级语言代码语句</dt><dd><ul>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_cond_expr" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.get_cond_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_cond_expr()</span></code></a> : 获取给定节点True Branch的条件表达式。可以通过 <a class="reference internal" href="poredec.models.html#poredec.models.expr.Expression.logical_not" title="poredec.models.expr.Expression.logical_not"><code class="xref py py-meth docutils literal notranslate"><span class="pre">logical_not()</span></code></a> 方法获取False Branch的条件表达式</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_goto_stmt" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_goto_stmt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gen_goto_stmt()</span></code></a> : 生成goto语句</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_if_stmt" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_if_stmt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gen_if_stmt()</span></code></a> : 生成if或if-else语句</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_while_stmt" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_while_stmt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gen_while_stmt()</span></code></a> : 生成while语句</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_do_while_stmt" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_do_while_stmt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gen_do_while_stmt()</span></code></a> : 生成do-while语句</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_continue_stmt" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_continue_stmt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gen_continue_stmt()</span></code></a> : 生成continue语句</p></li>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_break_stmt" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_break_stmt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gen_break_stmt()</span></code></a> : 生成break语句</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>化简节点</dt><dd><ul>
+<li><p><a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_node" title="poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_node"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reduce_node()</span></code></a> : 方法化简控制流图节点。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>更多API详情见 <a class="reference internal" href="poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin" title="poredec.backend.structure_converter_mixin.StructureConverterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureConverterMixin</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  2</span><span class="sd">结构化代码生成器</span>
+<span class="linenos">  3</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  4</span><span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="linenos">  5</span><span class="c1"># pylint: disable=unused-argument</span>
+<span class="linenos">  6</span><span class="c1"># pylint: disable=fixme</span>
+<span class="linenos">  7</span>
+<span class="linenos">  8</span><span class="kn">from</span><span class="w"> </span><span class="nn">..models.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span>
+<span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">..models.expr</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstExpr</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">.structure_converter_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructureConverterMixin</span><span class="p">,</span> <span class="n">ReduceRule</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;StructureConverter&quot;</span><span class="p">]</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="k">class</span><span class="w"> </span><span class="nc">StructureConverter</span><span class="p">(</span><span class="n">StructureConverterMixin</span><span class="p">):</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span>    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos"> 18</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;递归化简控制流图，尝试将多个节点化简为一个节点。</span>
+<span class="linenos"> 19</span>
+<span class="linenos"> 20</span><span class="sd">        函数会使用广度优先搜索遍历控制流图中从给定节点可达的所有节点，并在尝试化简这些节点——将节点与其后继节点合并。</span>
+<span class="linenos"> 21</span>
+<span class="linenos"> 22</span><span class="sd">        :param node: 待化简的节点</span>
+<span class="linenos"> 23</span><span class="sd">        :param by_rule: 为True时使用针对性规则化简，否则使用通用(goto)规则</span>
+<span class="linenos"> 24</span><span class="sd">        :param loop: 当给定loop时，只化简循环内的节点，否则化简所有node可达的节点。</span>
+<span class="linenos"> 25</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True</span>
+<span class="linenos"> 26</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 27</span>        <span class="k">if</span> <span class="n">by_rule</span><span class="p">:</span>
+<span class="linenos"> 28</span>            <span class="n">reduce_node_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_node_by_rule</span>
+<span class="linenos"> 29</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos"> 30</span>            <span class="n">reduce_node_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_node_by_goto</span>
+<span class="linenos"> 31</span>
+<span class="linenos"> 32</span>        <span class="k">if</span> <span class="n">loop</span><span class="p">:</span>
+<span class="linenos"> 33</span>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs_traverse_loop</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">reduce_node_func</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span>
+<span class="linenos"> 34</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos"> 35</span>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs_traverse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">reduce_node_func</span><span class="p">)</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span>    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_node_by_goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos"> 38</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简控制流图节点。</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span><span class="sd">        goto化简规则由`try_reduce_goto_`开头的函数实现。这些规则化简函数与</span>
+<span class="linenos"> 41</span><span class="sd">        :meth:`reduce_node_by_rule` 调用的规则化简函数类似；</span>
+<span class="linenos"> 42</span><span class="sd">        区别在于这些规则化函数只使用goto语句化简节点，并且一定能完成化简，并返回True。</span>
+<span class="linenos"> 43</span><span class="sd">        因此通常情况下，方法一定会返回True，否则说明实现的goto规则不完整。</span>
+<span class="linenos"> 44</span>
+<span class="linenos"> 45</span><span class="sd">        具体来说::</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span><span class="sd">            识别如下结构</span>
+<span class="linenos"> 48</span><span class="sd">            node {stmt1}</span>
+<span class="linenos"> 49</span><span class="sd">                └── succ {stmt2}</span>
+<span class="linenos"> 50</span><span class="sd">            将其化简为</span>
+<span class="linenos"> 51</span><span class="sd">            node {stmt1; goto stmt2;}</span>
+<span class="linenos"> 52</span>
+<span class="linenos"> 53</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos"> 54</span><span class="sd">        :return: 如果节点被化简，则返回True。注意：函数返回False说明函数实现不完整</span>
+<span class="linenos"> 55</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 56</span>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 57</span>            <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos"> 58</span>
+<span class="linenos"> 59</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_goto_sequence</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 60</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">GOTO_SEQUENCE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos"> 61</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos"> 62</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_goto_branch</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 63</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">GOTO_BRANCH</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos"> 64</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos"> 65</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_goto_switch</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 66</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">GOTO_SWITCH</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos"> 67</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+<span class="linenos"> 70</span>            <span class="sa">f</span><span class="s2">&quot;goto规则不全面无法化简节点: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#X</span><span class="si">}</span><span class="s2">，&quot;</span>
+<span class="linenos"> 71</span>            <span class="sa">f</span><span class="s2">&quot;该节点有</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="si">}</span><span class="s2">个后继节点&quot;</span>
+<span class="linenos"> 72</span>        <span class="p">)</span>
+<span class="linenos"> 73</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_node_by_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos"> 76</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;检查给定的控制流图节点是否满足化简条件，如果可以则将其化简为结构化语句。</span>
+<span class="linenos"> 77</span>
+<span class="linenos"> 78</span><span class="sd">        函数的实现逻辑是：首先检查节点是否为循环头，如果是则尝试化简循环；否则尝试使用其他规则化简节点。</span>
+<span class="linenos"> 79</span><span class="sd">        每个规则化简函数名以`try_reduce_`开头，例如`try_reduce_sequence`。</span>
+<span class="linenos"> 80</span><span class="sd">        每个规则化简函数需要完成两方面操作：</span>
+<span class="linenos"> 81</span><span class="sd">        1. 判断节点是否满足化简条件，如果不满足则返回False。</span>
+<span class="linenos"> 82</span><span class="sd">        2. 如果满足则将节点化简为结构化语句，并返回True。</span>
+<span class="linenos"> 83</span><span class="sd">        当任意节点被化简时，函数会调用`emit_reduce_event`方法记录化简事件，并返回True。</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span><span class="sd">        :param node: 待检查的控制流图节点</span>
+<span class="linenos"> 86</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos"> 87</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 88</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_header</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_header_under_analysis</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 89</span>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_loop</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="linenos"> 90</span>            <span class="bp">self</span><span class="o">.</span><span class="n">completely_reduce_loop</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="linenos"> 91</span>            <span class="bp">self</span><span class="o">.</span><span class="n">leave_loop</span><span class="p">()</span>
+<span class="linenos"> 92</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos"> 93</span>
+<span class="linenos"> 94</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_sequence</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 95</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">SEQUENCE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos"> 96</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos"> 97</span>
+<span class="linenos"> 98</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_while_true</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos"> 99</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">WHILE_TRUE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">100</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_do_while</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos">103</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">DO_WHILE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">104</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if_else</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos">107</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">IF_ELSE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">108</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+<span class="linenos">111</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">IF</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">112</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">113</span>
+<span class="linenos">114</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if_continue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if_continue</span><span class="p">(</span>
+<span class="linenos">115</span>            <span class="n">node</span><span class="p">,</span> <span class="kc">False</span>
+<span class="linenos">116</span>        <span class="p">):</span>
+<span class="linenos">117</span>            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">IF_CONTINUE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">118</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">119</span>
+<span class="linenos">120</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span>    <span class="k">def</span><span class="w"> </span><span class="nf">completely_reduce_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="linenos">123</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;完全化简以节点为循环头的循环，将循环内的节点化简为结构化语句。</span>
+<span class="linenos">124</span>
+<span class="linenos">125</span><span class="sd">        该方法首先尝试使用针对性规则化简循环；如果无法化简则使用goto规则将循环内的后继节点与节点合并，</span>
+<span class="linenos">126</span><span class="sd">        直到循环内只剩一个节点，从而可以将该节点转化为while(1)循环。</span>
+<span class="linenos">127</span>
+<span class="linenos">128</span><span class="sd">        注意：如果循环没有被化简，大概率是通用(goto)规则实现不完整。</span>
+<span class="linenos">129</span>
+<span class="linenos">130</span><span class="sd">        :param node: 循环头部节点</span>
+<span class="linenos">131</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">132</span>        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span>        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_reduced</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_cfg</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="linenos">135</span>            <span class="k">pass</span>
+<span class="linenos">136</span>
+<span class="linenos">137</span>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_reduced</span><span class="p">(</span><span class="n">loop</span><span class="p">):</span>
+<span class="linenos">138</span>            <span class="bp">self</span><span class="o">.</span><span class="n">reduce_cfg</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+<span class="linenos">139</span>            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">140</span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_while_true</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="linenos">141</span>                <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">WHILE_TRUE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="linenos">142</span>
+<span class="linenos">143</span>    <span class="c1"># 以下是具体的控制流图结构识别和化简方法，其中有一部分方法未实现，请根据文档要求实现这些方法</span>
+<span class="linenos">144</span>
+<span class="linenos">145</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_goto_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">146</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简顺序结构。对于给定的节点，如果只有一个后继节点，则在给定节点后面添加goto语句，并删除后继节点。</span>
+<span class="linenos">147</span>
+<span class="linenos">148</span><span class="sd">        具体来说::</span>
+<span class="linenos">149</span>
+<span class="linenos">150</span><span class="sd">            识别如下结构</span>
+<span class="linenos">151</span><span class="sd">            node {stmt1}</span>
+<span class="linenos">152</span><span class="sd">            └── succ {stmt2}</span>
+<span class="linenos">153</span><span class="sd">            将其化简为</span>
+<span class="linenos">154</span><span class="sd">            node {stmt1; goto stmt2;}</span>
+<span class="linenos">155</span>
+<span class="linenos">156</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">157</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">158</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">159</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">160</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">161</span>
+<span class="linenos">162</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_goto_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">163</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简if-else结构。对于给定的节点，如果有两个后继节点，则在节点后面添加if-goto-else-goto语句，并删除后继节点。</span>
+<span class="linenos">164</span>
+<span class="linenos">165</span><span class="sd">        具体来说::</span>
+<span class="linenos">166</span>
+<span class="linenos">167</span><span class="sd">            识别如下结构</span>
+<span class="linenos">168</span><span class="sd">            node {stmt1}</span>
+<span class="linenos">169</span><span class="sd">            ├── succ1 {stmt2}</span>
+<span class="linenos">170</span><span class="sd">            └── succ2 {stmt3}</span>
+<span class="linenos">171</span><span class="sd">            将其化简为</span>
+<span class="linenos">172</span><span class="sd">            node {stmt1; if(cond) goto stmt2; else goto stmt3;}</span>
+<span class="linenos">173</span>
+<span class="linenos">174</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">175</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">176</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">177</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">178</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">179</span>
+<span class="linenos">180</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_goto_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">181</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简switch结构。不要求实现&quot;&quot;&quot;</span>
+<span class="linenos">182</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">183</span>
+<span class="linenos">184</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_while_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">185</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为while(1)语句，避免使用goto</span>
+<span class="linenos">186</span>
+<span class="linenos">187</span><span class="sd">        具体来说::</span>
+<span class="linenos">188</span>
+<span class="linenos">189</span><span class="sd">            识别如下自循环结构</span>
+<span class="linenos">190</span><span class="sd">            node {stmt}</span>
+<span class="linenos">191</span><span class="sd">            └── node (自循环)</span>
+<span class="linenos">192</span><span class="sd">            将其化简为</span>
+<span class="linenos">193</span><span class="sd">            node {while(1) {stmt}}</span>
+<span class="linenos">194</span>
+<span class="linenos">195</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">196</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">197</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">198</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">199</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">200</span>
+<span class="linenos">201</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_do_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">202</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为do-while语句，避免使用goto</span>
+<span class="linenos">203</span>
+<span class="linenos">204</span><span class="sd">        具体来说::</span>
+<span class="linenos">205</span>
+<span class="linenos">206</span><span class="sd">            识别如下结构</span>
+<span class="linenos">207</span><span class="sd">            node {stmt}</span>
+<span class="linenos">208</span><span class="sd">            ├── node (自循环)</span>
+<span class="linenos">209</span><span class="sd">            └── succ (循环后继节点)</span>
+<span class="linenos">210</span><span class="sd">            将其化简为</span>
+<span class="linenos">211</span><span class="sd">            node {do {stmt} while (1)}</span>
+<span class="linenos">212</span><span class="sd">            └── succ</span>
+<span class="linenos">213</span>
+<span class="linenos">214</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">215</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">216</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">217</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">218</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">219</span>
+<span class="linenos">220</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">221</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将简单顺序结构化简为单个节点，避免使用goto</span>
+<span class="linenos">222</span>
+<span class="linenos">223</span><span class="sd">        具体来说::</span>
+<span class="linenos">224</span>
+<span class="linenos">225</span><span class="sd">            识别如下结构</span>
+<span class="linenos">226</span><span class="sd">            node {stmt1}</span>
+<span class="linenos">227</span><span class="sd">            └── succ {stmt2} (succ != node，即不是自循环)</span>
+<span class="linenos">228</span><span class="sd">                ...</span>
+<span class="linenos">229</span><span class="sd">                └── succ_succ_N (N &gt;= 0)</span>
+<span class="linenos">230</span><span class="sd">            将其化简为</span>
+<span class="linenos">231</span><span class="sd">            node {stmt1; stmt2}</span>
+<span class="linenos">232</span><span class="sd">            ...</span>
+<span class="linenos">233</span><span class="sd">            └── succ_succ_N (N &gt;= 0)</span>
+<span class="linenos">234</span>
+<span class="linenos">235</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">236</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">237</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">238</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">239</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">240</span>
+<span class="linenos">241</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">242</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if结构，避免使用goto。</span>
+<span class="linenos">243</span><span class="sd">        当branch为True时，将node的第一个后继视为if_node，否则将另一个后继视为if_node</span>
+<span class="linenos">244</span>
+<span class="linenos">245</span><span class="sd">        具体来说::</span>
+<span class="linenos">246</span>
+<span class="linenos">247</span><span class="sd">            识别如下结构：</span>
+<span class="linenos">248</span><span class="sd">            node {stmt}</span>
+<span class="linenos">249</span><span class="sd">            ├── if_node {stmt1}</span>
+<span class="linenos">250</span><span class="sd">            |     └── if_succ</span>
+<span class="linenos">251</span><span class="sd">            └── if_succ</span>
+<span class="linenos">252</span><span class="sd">            将其化简为</span>
+<span class="linenos">253</span><span class="sd">            node {stmt; if(cond) {stmt1}}</span>
+<span class="linenos">254</span><span class="sd">            └── if_succ</span>
+<span class="linenos">255</span>
+<span class="linenos">256</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">257</span><span class="sd">        :param true_branch: 尝试化简为if结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，</span>
+<span class="linenos">258</span><span class="sd">            否则条件为`cond = cond.logical_not()`</span>
+<span class="linenos">259</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">260</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">261</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">262</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">263</span>
+<span class="linenos">264</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if_continue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">265</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if-continue结构，避免使用goto</span>
+<span class="linenos">266</span>
+<span class="linenos">267</span><span class="sd">        具体来说::</span>
+<span class="linenos">268</span>
+<span class="linenos">269</span><span class="sd">            识别如下CFG结构</span>
+<span class="linenos">270</span><span class="sd">            node {stmt}</span>
+<span class="linenos">271</span><span class="sd">            ├── if_node</span>
+<span class="linenos">272</span><span class="sd">            |     └── node (跳转到循环头)</span>
+<span class="linenos">273</span><span class="sd">            └── if_succ</span>
+<span class="linenos">274</span><span class="sd">            将其化简为</span>
+<span class="linenos">275</span><span class="sd">            node {stmt; if(cond) continue;}</span>
+<span class="linenos">276</span><span class="sd">            └── if_succ</span>
+<span class="linenos">277</span>
+<span class="linenos">278</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">279</span><span class="sd">        :param true_branch: 尝试化简为if-continue结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，</span>
+<span class="linenos">280</span><span class="sd">            否则条件为`cond = cond.logical_not()`</span>
+<span class="linenos">281</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">282</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">283</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">284</span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">285</span>
+<span class="linenos">286</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if_break</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">287</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if-break结构，避免使用goto</span>
+<span class="linenos">288</span>
+<span class="linenos">289</span><span class="sd">        具体来说::</span>
+<span class="linenos">290</span>
+<span class="linenos">291</span><span class="sd">            识别如下CFG结构</span>
+<span class="linenos">292</span><span class="sd">            node {stmt}</span>
+<span class="linenos">293</span><span class="sd">            ├── if_node</span>
+<span class="linenos">294</span><span class="sd">            |     └── exit (跳转到内层循环出口)</span>
+<span class="linenos">295</span><span class="sd">            └── if_succ</span>
+<span class="linenos">296</span><span class="sd">            将其化简为</span>
+<span class="linenos">297</span><span class="sd">            node {stmt; if(cond) break;}</span>
+<span class="linenos">298</span><span class="sd">            └── if_succ</span>
+<span class="linenos">299</span>
+<span class="linenos">300</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">301</span><span class="sd">        :param true_branch: 尝试化简为if-break结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，</span>
+<span class="linenos">302</span><span class="sd">            否则条件为`cond = cond.logical_not()`</span>
+<span class="linenos">303</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">304</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">305</span>        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="linenos">306</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">loop</span><span class="p">:</span>
+<span class="linenos">307</span>            <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">308</span>
+<span class="linenos">309</span>        <span class="n">succs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="linenos">310</span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">succs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+<span class="linenos">311</span>            <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">312</span>
+<span class="linenos">313</span>        <span class="n">if_node</span> <span class="o">=</span> <span class="n">succs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">true_branch</span> <span class="k">else</span> <span class="n">succs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">314</span>        <span class="n">if_succ</span> <span class="o">=</span> <span class="n">succs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">true_branch</span> <span class="k">else</span> <span class="n">succs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">315</span>
+<span class="linenos">316</span>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_succ</span><span class="p">(</span><span class="n">if_node</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
+<span class="linenos">317</span>            <span class="k">return</span> <span class="kc">False</span>
+<span class="linenos">318</span>
+<span class="linenos">319</span>        <span class="n">cond</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cond_expr</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="linenos">320</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">true_branch</span><span class="p">:</span>
+<span class="linenos">321</span>            <span class="n">cond</span> <span class="o">=</span> <span class="n">cond</span><span class="o">.</span><span class="n">logical_not</span><span class="p">()</span>
+<span class="linenos">322</span>
+<span class="linenos">323</span>        <span class="n">break_stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_break_stmt</span><span class="p">(</span><span class="n">loop</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+<span class="linenos">324</span>        <span class="n">if_stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_if_stmt</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="p">[</span><span class="n">break_stmt</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+<span class="linenos">325</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reduce_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">if_stmt</span><span class="p">],</span> <span class="p">[</span><span class="n">if_succ</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+<span class="linenos">326</span>        <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">327</span>
+<span class="linenos">328</span>    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if_else</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">329</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if-else结构，避免使用goto</span>
+<span class="linenos">330</span>
+<span class="linenos">331</span><span class="sd">        具体来说::</span>
+<span class="linenos">332</span>
+<span class="linenos">333</span><span class="sd">            识别如下CFG结构</span>
+<span class="linenos">334</span><span class="sd">            node {stmt}</span>
+<span class="linenos">335</span><span class="sd">            ├── if_node {stmt1}</span>
+<span class="linenos">336</span><span class="sd">            |     └── if_succ</span>
+<span class="linenos">337</span><span class="sd">            └── else_node {stmt2}</span>
+<span class="linenos">338</span><span class="sd">                └── else_succ (if_succ == else_succ)</span>
+<span class="linenos">339</span><span class="sd">            将其化简为</span>
+<span class="linenos">340</span><span class="sd">            node {stmt; if(cond) {stmt1} else {stmt2};}</span>
+<span class="linenos">341</span><span class="sd">            └── if_succ</span>
+<span class="linenos">342</span>
+<span class="linenos">343</span><span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="linenos">344</span><span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="linenos">345</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">346</span>        <span class="c1"># TODO: 实现该方法</span>
+<span class="linenos">347</span>        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+<section id="testing">
+<span id="id13"></span><h2>测试和缺陷分析<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>在完成代码编写后，你需要对代码进行测试，以确保代码的正确性，并且诊断代码中存在的问题。</p>
+<p>在本项目中，我们提供了一些测试样例和参考结果，你可以使用这些测试样例来验证你的代码是否正确。
+测试样例位于 <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> 目录下，包含了20个测试样例。参考目录 <code class="docutils literal notranslate"><span class="pre">benchmarks/references</span></code> 下包含了任务一和任务二的参考结果。</p>
+<p>下面会分别介绍在任务一和任务二中如何测试和分析诊断代码缺陷。</p>
+<section id="task1-diag">
+<span id="id14"></span><h3>任务一测试和缺陷分析<a class="headerlink" href="#task1-diag" title="Link to this heading"></a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">PoREDec</span></code> 目录运行 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">cfg</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">poredec</span> <span class="pre">--tasks</span> <span class="pre">benchmarks/tasks.csv</span> <span class="pre">--only-cfg</span></code>  命令。
+该命令会用你编写的控制流图构建器分析在所有的测试样例，如果代码中存在问题，会在控制台输出错误信息，你可以根据错误信息诊断代码问题。</p>
+<p>运行结果会保存在 <code class="docutils literal notranslate"><span class="pre">outputs</span></code> 输出目录下，每一个测试样例对应输出目录下的一个目录，该目录中包含以下内容</p>
+<ul class="simple">
+<li><p>cfg-disassemble.png: 控制流图</p></li>
+<li><p>cfg-pcode.png: 使用Pcode表示的控制流图 (可读性较差，不建议使用这个文件进行诊断)</p></li>
+</ul>
+<p>为了判断控制流图是否正确，你可以将 <code class="docutils literal notranslate"><span class="pre">cfg-disassemble.png</span></code> 文件与 <code class="docutils literal notranslate"><span class="pre">benchmarks/references</span></code> 参考目录下对应的 <code class="docutils literal notranslate"><span class="pre">.png</span></code> 图片进行对比。
+若两者结构一致，则说明控制流图构建正确，否则控制流图不满足要求。注意，与参考图片相比，可能存在一些细节上的差异，例如节点的顺序，在图的结构一致的情况下，这些都不影响控制流图的正确性。</p>
+</section>
+<section id="id15">
+<h3>任务二测试和缺陷分析<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">PoREDec</span></code> 目录运行 <code class="docutils literal notranslate"><span class="pre">make</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">poredec</span> <span class="pre">--tasks</span> <span class="pre">benchmarks/tasks.csv</span></code> 或者 命令。
+如果代码中存在问题，会在控制台输出错误信息，你可以根据错误信息诊断代码问题。</p>
+<p>输出的结构化代码同样会保存在 <code class="docutils literal notranslate"><span class="pre">outputs</span></code> 目录下对应测试样例目录中，结构化代码生成涉及的文件有以下几类:</p>
+<ul class="simple">
+<li><p>decompiled.c: 结构化代码生成结果</p></li>
+<li><p>decompiled_simplified.c: 精简后的结构化代码生成结果，删除了代码块中的语句，更容易看出代码的高级语言结构（建议先分析该文件是否生成正确）</p></li>
+<li><p>cfg-structured.png: 控制流图化简结果</p></li>
+<li><p>cfg-structured-disassemble.png: 使用汇编代码而非Pcode表示的结构化代码生成结果，代码长度更短一些，但是代码语义容易存在错误</p></li>
+<li><p>debug-structure目录中的.png文件: 化简过程中的中间结果，例如 <code class="docutils literal notranslate"><span class="pre">2-REDUCE#IF_ELSE&#64;0x1066C.png</span></code> 表示第二次化简事件使用了 <code class="docutils literal notranslate"><span class="pre">IF_ELSE</span></code> 规则化简了从 <code class="docutils literal notranslate"><span class="pre">0x1066C</span></code> 开始的控制流图节点，产生的控制流图保存在该文件中。</p></li>
+<li><p>decompile.log: 化简过程中的日志，包含了化简规则的使用情况，节点删除情况等。每次运行的结果会追加到该文件中。如果要重新记录日志，可以删除该文件。</p></li>
+</ul>
+<p>参考结果目录 <code class="docutils literal notranslate"><span class="pre">benchmarks/references</span></code> 中包含以下参考结果:</p>
+<ul class="simple">
+<li><p>TASK.c: <code class="docutils literal notranslate"><span class="pre">decompiled.c</span></code> 的标准答案版本。</p></li>
+<li><p>TASK.simplified.c: <code class="docutils literal notranslate"><span class="pre">decompiled_simplified.c</span></code> 的标准答案版本。</p></li>
+<li><p>TASK.ghidra.c: 由Ghidra反编译器生成的反编译代码，你生成的代码与该代码差异很大是正常现象。该文件仅用于理解PoREDec反编译器由于缺少了代码优化，与现代反编译器间仍存在巨大差异。</p></li>
+</ul>
+<p>你可以通过以下步骤逐步分析结构化代码生成过程中的错误</p>
+<ol class="arabic simple">
+<li><p>对比 <code class="docutils literal notranslate"><span class="pre">outputs</span></code> 目录下的 <code class="docutils literal notranslate"><span class="pre">decompiled_simplified.c</span></code> 与 <code class="docutils literal notranslate"><span class="pre">benchmarks/references</span></code> 目录下对应的 <code class="docutils literal notranslate"><span class="pre">TASK.simplified.c</span></code> 。若两者控制流语义存在差异，则说明生成的结构化代码生成可能存在错误。注意，有的时候两者代码不同，但是语义相同，这种情况下结构化代码生成结果也是正确的。</p></li>
+<li><p>若上一步中发现存在错误，分析 <code class="docutils literal notranslate"><span class="pre">debug-structure</span></code> 中每一个化简步骤产生的中间结果，诊断是哪一个步骤出现了问题</p></li>
+<li><p>确定哪一个步骤出现问题后，结合调试分析缺陷，并修改代码重新测试</p></li>
+</ol>
+</section>
+</section>
+<section id="id16">
+<h2>评分标准<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>任务一</dt><dd><ul>
+<li><p>代码: 15分</p></li>
+<li><p>报告: 35分</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>任务二</dt><dd><ul>
+<li><p>代码: 15分</p></li>
+<li><p>报告: 35分</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>代码要求</dt><dd><ul>
+<li><p>不抄袭，不使用AI，否则将会被取消成绩。我们会做代码语义查重 (使用AI产生的相似代码也会被检测到)。</p></li>
+<li><p>代码能够在测试样例上正确运行，产生符合预期的反编译效果。</p></li>
+<li><p>将poredec源代码目录压缩后提交到elearning上, 提交的代码中只能修改poredec/frontend/cfg_builder.py和poredec/backend/structure_converter.py。其它代码修改可能会导致代码被判别为无法运行。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>报告要求</dt><dd><ul>
+<li><p>基本要求：逻辑清晰，步骤完整，符合报告模版规范</p></li>
+<li><p>得分点一：结合代码，解释背后的原理</p></li>
+<li><dl class="simple">
+<dt>得分点二：结合实验结果，说明代码的有效性</dt><dd><ul>
+<li><p>若无法达成预期效果，需要详细描述问题分析过程，并阐明改进想法</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>得分点三：阐述心得体会</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id17">
+<h2>报告模板<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<p>以下是Markdown格式的解题报告，最终报告需提交PDF版本。</p>
+<div class="highlight-Markdown notranslate"><div class="highlight"><pre><span></span><span class="gh"># Project2 项目报告</span>
+
+<span class="k">*</span><span class="w"> </span>姓名: 小张
+<span class="k">*</span><span class="w"> </span>学号: xxx
+
+<span class="gu">## 1. 任务一: 控制流图构建</span>
+
+<span class="gu">### 1.1 实现思路</span>
+
+在这一部分**概括地**介绍你实现控制流图构建算法的思路和方法。
+
+<span class="gu">### 1.2 代码实现</span>
+
+在这一部分**展开**介绍控制流图构建的代码实现。结合代码和代码注释加以说明你是如何实现控制流图构建算法的。
+在实现过程中，你可能会遇到一些问题，或者有一些想法，这些都可以在这一部分中进行描述。
+
+<span class="gu">### 1.3 结果分析</span>
+
+选择一个以base64或httpd开头的测试用例，结合图片、代码说明你的算法如何将汇编代码转换为控制流图的。
+在分析结果时，附上必要的图片和代码片段。
+
+<span class="gu">## 2. 任务二: 结构化代码生成</span>
+
+<span class="gu">### 2.1 实现思路</span>
+
+在这一部分**概括地**介绍你实现结构化代码生成算法的思路和方法。
+
+<span class="gu">### 2.1 代码实现</span>
+
+在这一部分**展开**介绍结构化代码生成的代码实现。结合代码和代码注释加以说明你是如何实现结构化代码生成算法的。
+在实现过程中，你可能会遇到一些问题，或者有一些想法，这些都可以在这一部分中进行描述。
+
+<span class="gu">### 2.3 结果分析</span>
+
+对于每一种化简规则，分别选择一个测试用例，结合图片、代码说明你的算法如何实现结构化。
+
+<span class="gu">## 总结</span>
+
+在这一部分**总结**你在本项目中的收获和心得体会。
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="index.html" class="btn btn-neutral float-left" title="PoREDec文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="overview.html" class="btn btn-neutral float-right" title="PoREDec反编译器概览" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

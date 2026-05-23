@@ -1,0 +1,845 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.backend package &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="poredec.frontend package" href="poredec.frontend.html" />
+    <link rel="prev" title="poredec package" href="poredec.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="poredec.html">poredec package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.DecompileOptions"><code class="docutils literal notranslate"><span class="pre">DecompileOptions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.decompile"><code class="docutils literal notranslate"><span class="pre">decompile()</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="poredec.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">poredec.backend package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.backend.loop_analyzer">poredec.backend.loop_analyzer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.backend.structure_converter">poredec.backend.structure_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.backend.structure_converter_mixin">poredec.backend.structure_converter_mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.frontend.html">poredec.frontend package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.models.html">poredec.models package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.utils.html">poredec.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="poredec.html">poredec package</a></li>
+      <li class="breadcrumb-item active">poredec.backend package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/poredec.backend.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-poredec.backend">
+<span id="poredec-backend-package"></span><h1>poredec.backend package<a class="headerlink" href="#module-poredec.backend" title="Link to this heading"></a></h1>
+<p>PoREDec反编译器后端</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-poredec.backend.loop_analyzer">
+<span id="poredec-backend-loop-analyzer-module"></span><h2>poredec.backend.loop_analyzer module<a class="headerlink" href="#module-poredec.backend.loop_analyzer" title="Link to this heading"></a></h2>
+<p>分析识别循环</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.backend.loop_analyzer.LoopAnalyzer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.backend.loop_analyzer.</span></span><span class="sig-name descname"><span class="pre">LoopAnalyzer</span></span><a class="reference internal" href="_modules/poredec/backend/loop_analyzer.html#LoopAnalyzer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.loop_analyzer.LoopAnalyzer" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>循环分析器</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.loop_analyzer.LoopAnalyzer.analyze_loop">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">analyze_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.loop.LoopInfo" title="poredec.models.loop.LoopInfo"><span class="pre">LoopInfo</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/loop_analyzer.html#LoopAnalyzer.analyze_loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.loop_analyzer.LoopAnalyzer.analyze_loop" title="Link to this definition"></a></dt>
+<dd><p>分析控制流图，获得控制流图中的循环信息</p>
+<p>函数使用Tarjan算法识别强连通分量，进而通过环路分析识别单个循环，最后根据循环体的嵌套关系识别嵌套循环。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cfg</strong> -- 控制流图</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>循环信息</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.backend.structure_converter">
+<span id="poredec-backend-structure-converter-module"></span><h2>poredec.backend.structure_converter module<a class="headerlink" href="#module-poredec.backend.structure_converter" title="Link to this heading"></a></h2>
+<p>结构化代码生成器</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.backend.structure_converter.</span></span><span class="sig-name descname"><span class="pre">StructureConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.loop.LoopInfo" title="poredec.models.loop.LoopInfo"><span class="pre">LoopInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">intermediate_output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin" title="poredec.backend.structure_converter_mixin.StructureConverterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureConverterMixin</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.completely_reduce_loop">
+<span class="sig-name descname"><span class="pre">completely_reduce_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.completely_reduce_loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.completely_reduce_loop" title="Link to this definition"></a></dt>
+<dd><p>完全化简以节点为循环头的循环，将循环内的节点化简为结构化语句。</p>
+<p>该方法首先尝试使用针对性规则化简循环；如果无法化简则使用goto规则将循环内的后继节点与节点合并，
+直到循环内只剩一个节点，从而可以将该节点转化为while(1)循环。</p>
+<p>注意：如果循环没有被化简，大概率是通用(goto)规则实现不完整。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 循环头部节点</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.reduce_cfg">
+<span class="sig-name descname"><span class="pre">reduce_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_rule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.reduce_cfg"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.reduce_cfg" title="Link to this definition"></a></dt>
+<dd><p>递归化简控制流图，尝试将多个节点化简为一个节点。</p>
+<p>函数会使用广度优先搜索遍历控制流图中从给定节点可达的所有节点，并在尝试化简这些节点——将节点与其后继节点合并。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待化简的节点</p></li>
+<li><p><strong>by_rule</strong> -- 为True时使用针对性规则化简，否则使用通用(goto)规则</p></li>
+<li><p><strong>loop</strong> -- 当给定loop时，只化简循环内的节点，否则化简所有node可达的节点。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.reduce_node_by_goto">
+<span class="sig-name descname"><span class="pre">reduce_node_by_goto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.reduce_node_by_goto"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.reduce_node_by_goto" title="Link to this definition"></a></dt>
+<dd><p>使用goto规则化简控制流图节点。</p>
+<p>goto化简规则由`try_reduce_goto_`开头的函数实现。这些规则化简函数与
+<a class="reference internal" href="#poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule" title="poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reduce_node_by_rule()</span></code></a> 调用的规则化简函数类似；
+区别在于这些规则化函数只使用goto语句化简节点，并且一定能完成化简，并返回True。
+因此通常情况下，方法一定会返回True，否则说明实现的goto规则不完整。</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下结构
+node {stmt1}
+    └── succ {stmt2}
+将其化简为
+node {stmt1; goto stmt2;}
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简，则返回True。注意：函数返回False说明函数实现不完整</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule">
+<span class="sig-name descname"><span class="pre">reduce_node_by_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.reduce_node_by_rule"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule" title="Link to this definition"></a></dt>
+<dd><p>检查给定的控制流图节点是否满足化简条件，如果可以则将其化简为结构化语句。</p>
+<p>函数的实现逻辑是：首先检查节点是否为循环头，如果是则尝试化简循环；否则尝试使用其他规则化简节点。
+每个规则化简函数名以`try_reduce_`开头，例如`try_reduce_sequence`。
+每个规则化简函数需要完成两方面操作：
+1. 判断节点是否满足化简条件，如果不满足则返回False。
+2. 如果满足则将节点化简为结构化语句，并返回True。
+当任意节点被化简时，函数会调用`emit_reduce_event`方法记录化简事件，并返回True。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待检查的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_do_while">
+<span class="sig-name descname"><span class="pre">try_reduce_do_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_do_while"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_do_while" title="Link to this definition"></a></dt>
+<dd><p>尝试将给定的节点化简为do-while语句，避免使用goto</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下结构
+node {stmt}
+├── node (自循环)
+└── succ (循环后继节点)
+将其化简为
+node {do {stmt} while (cond)}
+└── succ
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_goto_branch">
+<span class="sig-name descname"><span class="pre">try_reduce_goto_branch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_goto_branch"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_branch" title="Link to this definition"></a></dt>
+<dd><p>使用goto规则化简if-else结构。对于给定的节点，如果有两个后继节点，则在节点后面添加if-goto-else-goto语句，并删除后继节点。</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下结构
+node {stmt1}
+├── succ1 {stmt2}
+└── succ2 {stmt3}
+将其化简为
+node {stmt1; if(cond) goto stmt2; else goto stmt3;}
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_goto_sequence">
+<span class="sig-name descname"><span class="pre">try_reduce_goto_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_goto_sequence"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_sequence" title="Link to this definition"></a></dt>
+<dd><p>使用goto规则化简顺序结构。对于给定的节点，如果只有一个后继节点，则在给定节点后面添加goto语句，并删除后继节点。</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下结构
+node {stmt1}
+└── succ {stmt2}
+将其化简为
+node {stmt1; goto stmt2;}
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_goto_switch">
+<span class="sig-name descname"><span class="pre">try_reduce_goto_switch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_goto_switch"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_switch" title="Link to this definition"></a></dt>
+<dd><p>使用goto规则化简switch结构。不要求实现</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_if">
+<span class="sig-name descname"><span class="pre">try_reduce_if</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_if"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_if" title="Link to this definition"></a></dt>
+<dd><p>尝试将给定的节点化简为if结构，避免使用goto。
+当branch为True时，将node的第一个后继视为if_node，否则将另一个后继视为if_node</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下结构：
+node {stmt}
+├── if_node {stmt1}
+|     └── if_succ
+└── if_succ
+将其化简为
+node {stmt; if(cond) {stmt1}}
+└── if_succ
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待化简的控制流图节点</p></li>
+<li><p><strong>true_branch</strong> -- 尝试化简为if结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，
+否则条件为`cond = cond.logical_not()`</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_if_break">
+<span class="sig-name descname"><span class="pre">try_reduce_if_break</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_if_break"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_if_break" title="Link to this definition"></a></dt>
+<dd><p>尝试将给定的节点化简为if-break结构，避免使用goto</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下CFG结构
+node {stmt}
+├── if_node
+|     └── exit (跳转到内层循环出口)
+└── if_succ
+将其化简为
+node {stmt; if(cond) break;}
+└── if_succ
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待化简的控制流图节点</p></li>
+<li><p><strong>true_branch</strong> -- 尝试化简为if-break结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，
+否则条件为`cond = cond.logical_not()`</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_if_continue">
+<span class="sig-name descname"><span class="pre">try_reduce_if_continue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_if_continue"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_if_continue" title="Link to this definition"></a></dt>
+<dd><p>尝试将给定的节点化简为if-continue结构，避免使用goto</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下CFG结构
+node {stmt}
+├── if_node
+|     └── node (跳转到循环头)
+└── if_succ
+将其化简为
+node {stmt; if(cond) continue;}
+└── if_succ
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待化简的控制流图节点</p></li>
+<li><p><strong>true_branch</strong> -- 尝试化简为if-continue结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，
+否则条件为`cond = cond.logical_not()`</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_if_else">
+<span class="sig-name descname"><span class="pre">try_reduce_if_else</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_if_else"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_if_else" title="Link to this definition"></a></dt>
+<dd><p>尝试将给定的节点化简为if-else结构，避免使用goto</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下CFG结构
+node {stmt}
+├── if_node {stmt1}
+|     └── if_succ
+└── else_node {stmt2}
+    └── else_succ (if_succ == else_succ)
+将其化简为
+node {stmt; if(cond) {stmt1} else {stmt2};}
+└── if_succ
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_sequence">
+<span class="sig-name descname"><span class="pre">try_reduce_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_sequence"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_sequence" title="Link to this definition"></a></dt>
+<dd><p>尝试将简单顺序结构化简为单个节点，避免使用goto</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下结构
+node {stmt1}
+└── succ {stmt2} (succ != node，即不是自循环)
+    ...
+    └── succ_succ_N (N &gt;= 0)
+将其化简为
+node {stmt1; stmt2}
+...
+└── succ_succ_N (N &gt;= 0)
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter.StructureConverter.try_reduce_while_true">
+<span class="sig-name descname"><span class="pre">try_reduce_while_true</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter.html#StructureConverter.try_reduce_while_true"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter.StructureConverter.try_reduce_while_true" title="Link to this definition"></a></dt>
+<dd><p>尝试将给定的节点化简为while(1)语句，避免使用goto</p>
+<p>具体来说:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>识别如下自循环结构
+node {stmt}
+└── node (自循环)
+将其化简为
+node {while(1) {stmt}}
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待化简的控制流图节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.backend.structure_converter_mixin">
+<span id="poredec-backend-structure-converter-mixin-module"></span><h2>poredec.backend.structure_converter_mixin module<a class="headerlink" href="#module-poredec.backend.structure_converter_mixin" title="Link to this heading"></a></h2>
+<p>实现结构化分析的基础框架和通用API。</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.backend.structure_converter_mixin.</span></span><span class="sig-name descname"><span class="pre">StructureConverterMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.loop.LoopInfo" title="poredec.models.loop.LoopInfo"><span class="pre">LoopInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">intermediate_output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>代码结构化分析基础类，实现了基础框架和通用API</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> -- 待转换的控制流图</p></li>
+<li><p><strong>loop_info</strong> -- 循环信息</p></li>
+<li><p><strong>dbg</strong> -- 是否开启调试模式，开启时每次化简后都会打印控制流图</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.bfs_traverse">
+<span class="sig-name descname"><span class="pre">bfs_traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">operate_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.bfs_traverse"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.bfs_traverse" title="Link to this definition"></a></dt>
+<dd><p>广度优先遍历控制流图，对每个节点调用inspect_func。
+:param node: 遍历的起始节点
+:param operate_func: 检查函数，接受一个CFGNode参数，返回一个bool值</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.bfs_traverse_loop">
+<span class="sig-name descname"><span class="pre">bfs_traverse_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inspect_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.loop.Loop" title="poredec.models.loop.Loop"><span class="pre">Loop</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.bfs_traverse_loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.bfs_traverse_loop" title="Link to this definition"></a></dt>
+<dd><p>广度优先遍历循环体，对每个节点调用inspect_func。
+:param node: 遍历的起始节点
+:param inspect_func: 检查函数，接受一个CFGNode参数，返回一个bool值
+:param loop: 循环体</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>如果有节点被检查，则返回True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.clean_reduced_dangling_nodes">
+<span class="sig-name descname"><span class="pre">clean_reduced_dangling_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.clean_reduced_dangling_nodes"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.clean_reduced_dangling_nodes" title="Link to this definition"></a></dt>
+<dd><p>清理控制流图中由于针对性规则化简产生的孤立节点</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.convert"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.convert" title="Link to this definition"></a></dt>
+<dd><p>结构化控制流图，结构化后的控制流图应该只包含一个节点，该节点中包含所有结构化语句。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>结构化后的控制流图。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.convert_goto_targets">
+<span class="sig-name descname"><span class="pre">convert_goto_targets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.convert_goto_targets"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.convert_goto_targets" title="Link to this definition"></a></dt>
+<dd><p>化简所有未完全化简的goto目标节点。该方法可能需要多次调用，因为化简一个goto目标节点可能会使其它节点变得可化简。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>如果有节点被化简，则返回True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.convert_node">
+<span class="sig-name descname"><span class="pre">convert_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.convert_node"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.convert_node" title="Link to this definition"></a></dt>
+<dd><p>完全化简一个节点，化简后该节点不包含后继节点
+:return: 如果节点被化简为结构化语句，则返回True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.emit_reduce_event">
+<span class="sig-name descname"><span class="pre">emit_reduce_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.reduce_event.ReduceRule" title="poredec.models.reduce_event.ReduceRule"><span class="pre">ReduceRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.emit_reduce_event"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.emit_reduce_event" title="Link to this definition"></a></dt>
+<dd><p>添加化简事件</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.enter_loop">
+<span class="sig-name descname"><span class="pre">enter_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.enter_loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.enter_loop" title="Link to this definition"></a></dt>
+<dd><p>标志进入循环，此时调用 meth:<cite>is_loop_header_under_analysis</cite> 返回True</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 循环的头部</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_break_stmt">
+<span class="sig-name descname"><span class="pre">gen_break_stmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.stmt.BreakStmt" title="poredec.models.stmt.BreakStmt"><span class="pre">BreakStmt</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.gen_break_stmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_break_stmt" title="Link to this definition"></a></dt>
+<dd><p>生成break语句
+:param target_node: break跳转到的目标节点
+:return: break语句</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_continue_stmt">
+<span class="sig-name descname"><span class="pre">gen_continue_stmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.stmt.ContinueStmt" title="poredec.models.stmt.ContinueStmt"><span class="pre">ContinueStmt</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.gen_continue_stmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_continue_stmt" title="Link to this definition"></a></dt>
+<dd><p>生成continue语句
+:param target_node: continue跳转到的目标节点
+:return: continue语句</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_do_while_stmt">
+<span class="sig-name descname"><span class="pre">gen_do_while_stmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.stmt.DoWhileStmt" title="poredec.models.stmt.DoWhileStmt"><span class="pre">DoWhileStmt</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.gen_do_while_stmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_do_while_stmt" title="Link to this definition"></a></dt>
+<dd><p>生成do-while语句</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> -- 循环条件</p></li>
+<li><p><strong>body</strong> -- 循环体</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>do-while语句</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_goto_stmt">
+<span class="sig-name descname"><span class="pre">gen_goto_stmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.stmt.GotoStmt" title="poredec.models.stmt.GotoStmt"><span class="pre">GotoStmt</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.gen_goto_stmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_goto_stmt" title="Link to this definition"></a></dt>
+<dd><p>生成跳转到目标代码块的指令序列</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_node</strong> -- 目标节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>跳转到目标代码块的指令序列，包括goto指令</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_if_stmt">
+<span class="sig-name descname"><span class="pre">gen_if_stmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">false_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.stmt.IfStmt" title="poredec.models.stmt.IfStmt"><span class="pre">IfStmt</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.gen_if_stmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_if_stmt" title="Link to this definition"></a></dt>
+<dd><p>生成if-else语句的指令序列，true_body和false_body不能同时为空，否则会抛出ValueError。
+若true_body为空，则会将条件取反。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> -- 条件表达式</p></li>
+<li><p><strong>true_body</strong> -- 条件为真时的指令序列</p></li>
+<li><p><strong>false_body</strong> -- 条件为假时的指令序列</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>if-else语句的指令序列</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_while_stmt">
+<span class="sig-name descname"><span class="pre">gen_while_stmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.stmt.WhileStmt" title="poredec.models.stmt.WhileStmt"><span class="pre">WhileStmt</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.gen_while_stmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_while_stmt" title="Link to this definition"></a></dt>
+<dd><p>生成while语句</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> -- 循环条件</p></li>
+<li><p><strong>body</strong> -- 循环体</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>while语句</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.get_cond_expr">
+<span class="sig-name descname"><span class="pre">get_cond_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.get_cond_expr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_cond_expr" title="Link to this definition"></a></dt>
+<dd><p>获取给定节点True Branch的条件表达式</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 节点不能已经被化简，即不能已经作为 meth:<cite>reduce_node</cite> 的调用参数</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>条件表达式</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_for">
+<span class="sig-name descname"><span class="pre">get_loop_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.loop.Loop" title="poredec.models.loop.Loop"><span class="pre">Loop</span></a></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.get_loop_for"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_for" title="Link to this definition"></a></dt>
+<dd><p>获取给定节点所在的循环，如果该循环在结构化过程中被化简，则返回其父循环；如果没有找到循环，则返回None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_succs">
+<span class="sig-name descname"><span class="pre">get_loop_succs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.get_loop_succs"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_succs" title="Link to this definition"></a></dt>
+<dd><p>获取给定节点的循环后继节点</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.get_reduce_events">
+<span class="sig-name descname"><span class="pre">get_reduce_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.reduce_event.ReduceEvent" title="poredec.models.reduce_event.ReduceEvent"><span class="pre">ReduceEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.get_reduce_events"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_reduce_events" title="Link to this definition"></a></dt>
+<dd><p>获取化简事件</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.is_back_edge">
+<span class="sig-name descname"><span class="pre">is_back_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.is_back_edge"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_back_edge" title="Link to this definition"></a></dt>
+<dd><p>判断u-&gt;v是否是循环的回边</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header">
+<span class="sig-name descname"><span class="pre">is_loop_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.loop.Loop" title="poredec.models.loop.Loop"><span class="pre">Loop</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.is_loop_header"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header" title="Link to this definition"></a></dt>
+<dd><p>检查给定的节点是否是循环的头部</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待检查的节点</p></li>
+<li><p><strong>loop</strong> -- 待检查的循环，如果给定该参数，则只判断节点是否是该循环的头部</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果是循环的头部，且该循环没有在结构化过程中被化简，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header_under_analysis">
+<span class="sig-name descname"><span class="pre">is_loop_header_under_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.is_loop_header_under_analysis"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header_under_analysis" title="Link to this definition"></a></dt>
+<dd><p>检查给定的节点是否是正在分析的循环的头部</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- 待检查的节点</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果是循环的头部，则返回True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_reduced">
+<span class="sig-name descname"><span class="pre">is_loop_reduced</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.loop.Loop" title="poredec.models.loop.Loop"><span class="pre">Loop</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.is_loop_reduced"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_reduced" title="Link to this definition"></a></dt>
+<dd><p>检查给定的节点是否在结构化过程中被化简</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_succ">
+<span class="sig-name descname"><span class="pre">is_loop_succ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.loop.Loop" title="poredec.models.loop.Loop"><span class="pre">Loop</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.is_loop_succ"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_succ" title="Link to this definition"></a></dt>
+<dd><p>检查给定的节点是否是循环的后继节点</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待检查的节点</p></li>
+<li><p><strong>loop</strong> -- 待检查的循环</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果是循环的后继节点，且该循环没有在结构化过程中被化简，则返回True，否则返回False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.leave_loop">
+<span class="sig-name descname"><span class="pre">leave_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.leave_loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.leave_loop" title="Link to this definition"></a></dt>
+<dd><p>标志离开循环，此时调用 meth:<cite>is_loop_header_under_analysis</cite> 返回False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.merge_goto_targets">
+<span class="sig-name descname"><span class="pre">merge_goto_targets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.merge_goto_targets"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.merge_goto_targets" title="Link to this definition"></a></dt>
+<dd><p>尝试将goto语句替换为目标代码块，如果不能替换，则将目标代码块添加到CFG入口节点</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.predecessors">
+<span class="sig-name descname"><span class="pre">predecessors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.predecessors"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.predecessors" title="Link to this definition"></a></dt>
+<dd><p>获取给定节点的前驱节点</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span> <span class="o">=</span> <span class="n">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">preds</span><span class="p">:</span> <span class="k">pass</span> <span class="c1"># ...处理前驱节点</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span> <span class="c1"># 获取前驱节点的数量</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_cfg">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_rule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.reduce_cfg"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_cfg" title="Link to this definition"></a></dt>
+<dd><p>递归化简控制流图，尝试将多个节点化简为一个节点。</p>
+<p>函数会使用广度优先搜索遍历控制流图中从给定节点可达的所有节点，并在尝试化简这些节点——将节点与其后继节点合并。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待化简的节点</p></li>
+<li><p><strong>by_rule</strong> -- 为True时使用针对性规则化简，否则使用通用(goto)规则</p></li>
+<li><p><strong>loop</strong> -- 当给定loop时，只化简循环内的节点，否则化简所有node可达的节点。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>如果节点被化简为结构化语句，则返回True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_node">
+<span class="sig-name descname"><span class="pre">reduce_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_succs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.reduce_node"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_node" title="Link to this definition"></a></dt>
+<dd><p>化简给定的CFG节点，将node中的指令替换为body中的指令，并将node的后继节点替换为succs中的节点</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> -- 待化简的节点</p></li>
+<li><p><strong>body</strong> -- 待添加的指令序列</p></li>
+<li><p><strong>new_succs</strong> -- 新的后继节点</p></li>
+<li><p><strong>extend</strong> -- True表示将body中的指令追加到node中，否则替换node中的指令</p></li>
+</ul>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">reduce_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">stmt</span><span class="p">],</span> <span class="n">new_succs</span><span class="o">=</span><span class="p">[</span><span class="n">succ1</span><span class="p">,</span> <span class="n">succ2</span><span class="p">],</span> <span class="n">extend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 上述代码将node中的指令替换为`node.insns + [stmt]`，并将node的后继节点替换为succ1和succ2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">reduce_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">stmt</span><span class="p">],</span> <span class="n">new_succs</span><span class="o">=</span><span class="p">[],</span> <span class="n">extend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 上述代码将node中的指令替换为`[stmt]`，并标记node没有后继节点</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.replace_break_continue_outside_loop">
+<span class="sig-name descname"><span class="pre">replace_break_continue_outside_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.replace_break_continue_outside_loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.replace_break_continue_outside_loop" title="Link to this definition"></a></dt>
+<dd><p>将循环外的break和continue替换为goto语句</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.backend.structure_converter_mixin.StructureConverterMixin.successors">
+<span class="sig-name descname"><span class="pre">successors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="poredec.models.html#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/poredec/backend/structure_converter_mixin.html#StructureConverterMixin.successors"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.backend.structure_converter_mixin.StructureConverterMixin.successors" title="Link to this definition"></a></dt>
+<dd><p>获取给定节点的后继节点</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">succs</span> <span class="o">=</span> <span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">succs</span><span class="p">:</span> <span class="k">pass</span> <span class="c1"># ...处理后继节点</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">succ_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">succs</span><span class="p">)</span> <span class="c1"># 获取后继节点的数量</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="poredec.html" class="btn btn-neutral float-left" title="poredec package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="poredec.frontend.html" class="btn btn-neutral float-right" title="poredec.frontend package" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

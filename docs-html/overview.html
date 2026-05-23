@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PoREDec反编译器概览 &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="poredec package" href="poredec.html" />
+    <link rel="prev" title="项目: 简易反编译器的实现" href="project.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PoREDec反编译器概览</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">源代码文件结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">类架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">工作流程</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PoREDec反编译器概览</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/overview.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="poredec">
+<span id="overview"></span><h1>PoREDec反编译器概览<a class="headerlink" href="#poredec" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>源代码文件结构<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>以下是poredec源码目录结构:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>poredec
+├── __init__.py
+├── __main__.py
+├── models # 数据定义
+│   ├── cfg.py
+│   ├── expr.py
+│   ├── __init__.py
+│   ├── insn.py
+│   ├── lift_mode.py
+│   ├── loop.py
+│   ├── reduce_event.py
+│   └── stmt.py
+├── frontend # 反编译前端
+│   ├── __init__.py
+│   ├── cfg_builder.py # 任务一：构建控制流图
+│   ├── lifter.py
+│   └── loader.py
+├── backend # 反编译后端
+│   ├── __init__.py
+│   ├── loop_analyzer.py
+│   ├── structure_converter_mixin.py # 实现了结构化代码生成依赖的API
+│   └── structure_converter.py # 任务二：生成结构化代码
+└── utils # 反编译辅助工具
+    └── __init__.py
+    ├── display.py
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>类架构<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id4">
+<div class="graphviz"><img src="_images/graphviz-fe3c3683fdfcce507f78c4f929e27817deb428fe.png" alt="digraph ClassGraph {
+    rankdir=TD;
+    graph [fontsize=10 fontname=&quot;Verdana&quot; compound=true];
+    node [fontsize=10 fontname=&quot;Verdana&quot; shape=record];
+
+    subgraph models {
+        node [shape=box, style=filled, color=lightyellow];
+        label=&quot;models (数据定义)&quot;
+
+        models [style=invisible]
+
+        # insn.py 指令
+        &quot;Insn&quot;
+        &quot;DisasInsn&quot;
+        &quot;PcodeInsn&quot;
+
+        # expr.py 表达式
+        &quot;Expression&quot;
+        &quot;ConstExpr&quot;
+        &quot;VarExpr&quot;
+        &quot;NotExpr&quot;
+
+        # stmt.py 语句
+        &quot;Statement&quot;
+        &quot;PcodeStmt&quot;
+        &quot;GotoStmt&quot;
+        &quot;IfStmt&quot;
+        &quot;WhileStmt&quot;
+        &quot;DoWhileStmt&quot;
+        &quot;ContinueStmt&quot;
+        &quot;BreakStmt&quot;
+        &quot;SwitchStmt&quot;
+
+        # cfg.py 控制流图
+        &quot;CFGNode&quot;
+        &quot;ControlFlowGraph&quot;
+
+        # loop.py 循环
+        &quot;Loop&quot;
+        &quot;LoopInfo&quot;
+
+        # Insn -&gt; DisasInsn [label=&quot;派生&quot;]
+        # Insn -&gt; PcodeInsn [label=&quot;派生&quot;]
+        # Insn -&gt; Statement [label=&quot;派生&quot;]
+
+        Expression -&gt; ConstExpr [label=&quot;派生&quot;]
+        Expression -&gt; VarExpr [label=&quot;派生&quot;]
+        Expression -&gt; NotExpr [label=&quot;派生&quot;]
+
+        Statement -&gt; PcodeStmt [label=&quot;派生&quot;]
+        Statement -&gt; GotoStmt [label=&quot;派生&quot;]
+        Statement -&gt; IfStmt [label=&quot;派生&quot;]
+        Statement -&gt; WhileStmt [label=&quot;派生&quot;]
+        Statement -&gt; DoWhileStmt [label=&quot;派生&quot;]
+        Statement -&gt; ContinueStmt [label=&quot;派生&quot;]
+        Statement -&gt; BreakStmt [label=&quot;派生&quot;]
+        Statement -&gt; SwitchStmt [label=&quot;派生&quot;]
+
+        WhileStmt -&gt; Expression [label=&quot;包含&quot;]
+        DoWhileStmt -&gt; Expression [label=&quot;包含&quot;]
+        IfStmt -&gt; Expression [label=&quot;包含&quot;]
+
+        ControlFlowGraph -&gt; CFGNode [label=&quot;包含&quot;]
+        CFGNode -&gt; Insn [label=&quot;包含&quot;]
+
+        LoopInfo -&gt; Loop [label=&quot;包含&quot;]
+    }
+
+    subgraph frontend {
+        node [shape=box, style=filled, color=lightgreen]
+
+        frontend [style=invisible]
+
+        &quot;Loader&quot;
+        &quot;Lifter&quot;
+        &quot;CFGBuilder&quot; [label=&quot;CFGBuilder\n(任务一)&quot;]
+
+        CFGBuilder -&gt; Lifter [label=&quot;依赖&quot;]
+        Lifter -&gt; Loader [label=&quot;依赖&quot;]
+    }
+
+    Lifter -&gt; DisasInsn [label=&quot;反汇编&quot;]
+    Lifter -&gt; PcodeInsn [label=&quot;中间代码生成&quot;]
+    CFGBuilder -&gt; ControlFlowGraph [label=&quot;构建&quot;]
+
+    subgraph backend {
+        node [shape=box, style=filled, color=lightblue]
+
+        backend [style=invisible]
+
+        &quot;LoopAnalyzer&quot;
+        &quot;StructureConverter&quot; [label=&quot;StructureConverter\n(任务二)&quot;]
+        &quot;StructureConverterMixin&quot;
+
+        StructureConverter -&gt; StructureConverterMixin [label=&quot;继承&quot;]
+    }
+
+    LoopAnalyzer -&gt; LoopInfo [label=&quot;循环分析&quot;]
+    StructureConverterMixin -&gt; Statement [label=&quot;高级语言代码生成&quot;]
+    StructureConverterMixin -&gt; LoopInfo [label=&quot;使用&quot;]
+    StructureConverterMixin -&gt; ControlFlowGraph [label=&quot;使用&quot;]
+}" class="graphviz" /></div>
+<figcaption>
+<p><span class="caption-text">PoREDec类架构图</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">CFGBuilder</span></code> 和 <code class="docutils literal notranslate"><span class="pre">StructureConverter</span></code> 是本次项目需要实现的两个主要类。</p>
+</section>
+<section id="id3">
+<h2>工作流程<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>PoREDec反编译器的工作流程如下</p>
+<figure class="align-center" id="id5">
+<div class="graphviz"><img src="_images/graphviz-c4ab02873d30888515272840a4de183a9195b979.png" alt="digraph Workflow {
+    rankdir=TD
+    node [shape=box, style=filled]
+
+    &quot;Binary&quot;   [label=&quot;二进制程序&quot; , shape=folder, style=&quot;&quot;, color=white]
+    &quot;Function&quot; [label=&quot;目标地址&quot;   , shape=note, style=&quot;&quot;, color=white]
+    &quot;CFG&quot;      [label=&quot;控制流图&quot;   , shape=note, style=&quot;&quot;, color=white]
+    &quot;Loop&quot;     [label=&quot;循环信息&quot;   , shape=note, style=&quot;&quot;, color=white]
+    &quot;HighCode&quot; [label=&quot;(伪)高级语言代码&quot;, shape=component, style=&quot;&quot;, color=white]
+
+    &quot;Loader&quot;
+    &quot;Lifter&quot;
+    &quot;CFGBuilder&quot;
+    &quot;LoopAnalyzer&quot;
+    &quot;StructureConverter&quot;
+
+    &quot;Binary&quot; -&gt; &quot;Loader&quot;
+    &quot;Function&quot; -&gt; &quot;Loader&quot;
+    &quot;Loader&quot; -&gt; &quot;Lifter&quot; [label=&quot;函数机器码&quot;]
+    &quot;Lifter&quot; -&gt; &quot;CFGBuilder&quot; [label=&quot;汇编或P-code代码&quot;]
+    &quot;CFGBuilder&quot; -&gt; &quot;CFG&quot;
+    &quot;CFG&quot; -&gt; &quot;LoopAnalyzer&quot;
+    &quot;LoopAnalyzer&quot; -&gt; &quot;Loop&quot;
+    &quot;Loop&quot; -&gt; &quot;StructureConverter&quot;
+    &quot;CFG&quot; -&gt; &quot;StructureConverter&quot;
+    &quot;StructureConverter&quot; -&gt; &quot;HighCode&quot;
+}" class="graphviz" /></div>
+<figcaption>
+<p><span class="caption-text">PoREDec工作流程图</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="project.html" class="btn btn-neutral float-left" title="项目: 简易反编译器的实现" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="poredec.html" class="btn btn-neutral float-right" title="poredec package" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

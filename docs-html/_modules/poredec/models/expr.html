@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.models.expr &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.models.expr</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.models.expr 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">本模块包含高级语言表达式的定义</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Varnode</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Expression&quot;</span><span class="p">,</span> <span class="s2">&quot;NotExpr&quot;</span><span class="p">,</span> <span class="s2">&quot;VarExpr&quot;</span><span class="p">,</span> <span class="s2">&quot;ConstExpr&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Expression">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.Expression">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Expression</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;高级语言表达式&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Expression.logical_not">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.Expression.logical_not">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Expression&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取当前表达式的逻辑非表达式&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">NotExpr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="NotExpr">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.NotExpr">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NotExpr</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;逻辑非表达式&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">Expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;!</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="VarExpr">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.VarExpr">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VarExpr</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;变量表达式&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varnode</span><span class="p">:</span> <span class="n">Varnode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varnode</span> <span class="o">=</span> <span class="n">varnode</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt_vn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varnode</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VarExpr.fmt_vn">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.VarExpr.fmt_vn">[文档]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fmt_vn</span><span class="p">(</span><span class="n">vn</span><span class="p">:</span> <span class="n">Varnode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;格式化Varnode&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">vn</span><span class="o">.</span><span class="n">space</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;const&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%#x</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">vn</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">elif</span> <span class="n">vn</span><span class="o">.</span><span class="n">space</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;register&quot;</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">vn</span><span class="o">.</span><span class="n">getRegisterName</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">space</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">size</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConstExpr">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.ConstExpr">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstExpr</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;常量表达式&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="ConstExpr.logical_not">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.expr.ConstExpr.logical_not">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ConstExpr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ConstExpr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.backend.structure_converter &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.backend.structure_converter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.backend.structure_converter 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">结构化代码生成器</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="c1"># pylint: disable=unused-argument</span>
+<span class="c1"># pylint: disable=fixme</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.expr</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstExpr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.structure_converter_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructureConverterMixin</span><span class="p">,</span> <span class="n">ReduceRule</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;StructureConverter&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="StructureConverter">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StructureConverter</span><span class="p">(</span><span class="n">StructureConverterMixin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="StructureConverter.reduce_cfg">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.reduce_cfg">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;递归化简控制流图，尝试将多个节点化简为一个节点。</span>
+
+<span class="sd">        函数会使用广度优先搜索遍历控制流图中从给定节点可达的所有节点，并在尝试化简这些节点——将节点与其后继节点合并。</span>
+
+<span class="sd">        :param node: 待化简的节点</span>
+<span class="sd">        :param by_rule: 为True时使用针对性规则化简，否则使用通用(goto)规则</span>
+<span class="sd">        :param loop: 当给定loop时，只化简循环内的节点，否则化简所有node可达的节点。</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">by_rule</span><span class="p">:</span>
+            <span class="n">reduce_node_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_node_by_rule</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reduce_node_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_node_by_goto</span>
+
+        <span class="k">if</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs_traverse_loop</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">reduce_node_func</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs_traverse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">reduce_node_func</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.reduce_node_by_goto">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.reduce_node_by_goto">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_node_by_goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简控制流图节点。</span>
+
+<span class="sd">        goto化简规则由`try_reduce_goto_`开头的函数实现。这些规则化简函数与</span>
+<span class="sd">        :meth:`reduce_node_by_rule` 调用的规则化简函数类似；</span>
+<span class="sd">        区别在于这些规则化函数只使用goto语句化简节点，并且一定能完成化简，并返回True。</span>
+<span class="sd">        因此通常情况下，方法一定会返回True，否则说明实现的goto规则不完整。</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下结构</span>
+<span class="sd">            node {stmt1}</span>
+<span class="sd">                └── succ {stmt2}</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt1; goto stmt2;}</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简，则返回True。注意：函数返回False说明函数实现不完整</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_goto_sequence</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">GOTO_SEQUENCE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_goto_branch</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">GOTO_BRANCH</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_goto_switch</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">GOTO_SWITCH</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;goto规则不全面无法化简节点: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#X</span><span class="si">}</span><span class="s2">，&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;该节点有</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="si">}</span><span class="s2">个后继节点&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.reduce_node_by_rule">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.reduce_node_by_rule">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_node_by_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;检查给定的控制流图节点是否满足化简条件，如果可以则将其化简为结构化语句。</span>
+
+<span class="sd">        函数的实现逻辑是：首先检查节点是否为循环头，如果是则尝试化简循环；否则尝试使用其他规则化简节点。</span>
+<span class="sd">        每个规则化简函数名以`try_reduce_`开头，例如`try_reduce_sequence`。</span>
+<span class="sd">        每个规则化简函数需要完成两方面操作：</span>
+<span class="sd">        1. 判断节点是否满足化简条件，如果不满足则返回False。</span>
+<span class="sd">        2. 如果满足则将节点化简为结构化语句，并返回True。</span>
+<span class="sd">        当任意节点被化简时，函数会调用`emit_reduce_event`方法记录化简事件，并返回True。</span>
+
+<span class="sd">        :param node: 待检查的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_header</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_header_under_analysis</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_loop</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">completely_reduce_loop</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leave_loop</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_sequence</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">SEQUENCE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_while_true</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">WHILE_TRUE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_do_while</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">DO_WHILE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if_else</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">IF_ELSE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">IF</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if_continue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_if_continue</span><span class="p">(</span>
+            <span class="n">node</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">IF_CONTINUE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.completely_reduce_loop">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.completely_reduce_loop">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">completely_reduce_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;完全化简以节点为循环头的循环，将循环内的节点化简为结构化语句。</span>
+
+<span class="sd">        该方法首先尝试使用针对性规则化简循环；如果无法化简则使用goto规则将循环内的后继节点与节点合并，</span>
+<span class="sd">        直到循环内只剩一个节点，从而可以将该节点转化为while(1)循环。</span>
+
+<span class="sd">        注意：如果循环没有被化简，大概率是通用(goto)规则实现不完整。</span>
+
+<span class="sd">        :param node: 循环头部节点</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_reduced</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_cfg</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_reduced</span><span class="p">(</span><span class="n">loop</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reduce_cfg</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_reduce_while_true</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">WHILE_TRUE</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></div>
+
+
+    <span class="c1"># 以下是具体的控制流图结构识别和化简方法，其中有一部分方法未实现，请根据文档要求实现这些方法</span>
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_goto_sequence">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_sequence">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_goto_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简顺序结构。对于给定的节点，如果只有一个后继节点，则在给定节点后面添加goto语句，并删除后继节点。</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下结构</span>
+<span class="sd">            node {stmt1}</span>
+<span class="sd">            └── succ {stmt2}</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt1; goto stmt2;}</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_goto_branch">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_branch">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_goto_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简if-else结构。对于给定的节点，如果有两个后继节点，则在节点后面添加if-goto-else-goto语句，并删除后继节点。</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下结构</span>
+<span class="sd">            node {stmt1}</span>
+<span class="sd">            ├── succ1 {stmt2}</span>
+<span class="sd">            └── succ2 {stmt3}</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt1; if(cond) goto stmt2; else goto stmt3;}</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_goto_switch">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_goto_switch">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_goto_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用goto规则化简switch结构。不要求实现&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_while_true">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_while_true">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_while_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为while(1)语句，避免使用goto</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下自循环结构</span>
+<span class="sd">            node {stmt}</span>
+<span class="sd">            └── node (自循环)</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {while(1) {stmt}}</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_do_while">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_do_while">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_do_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为do-while语句，避免使用goto</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下结构</span>
+<span class="sd">            node {stmt}</span>
+<span class="sd">            ├── node (自循环)</span>
+<span class="sd">            └── succ (循环后继节点)</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {do {stmt} while (1)}</span>
+<span class="sd">            └── succ</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_sequence">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_sequence">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将简单顺序结构化简为单个节点，避免使用goto</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下结构</span>
+<span class="sd">            node {stmt1}</span>
+<span class="sd">            └── succ {stmt2} (succ != node，即不是自循环)</span>
+<span class="sd">                ...</span>
+<span class="sd">                └── succ_succ_N (N &gt;= 0)</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt1; stmt2}</span>
+<span class="sd">            ...</span>
+<span class="sd">            └── succ_succ_N (N &gt;= 0)</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_if">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if结构，避免使用goto。</span>
+<span class="sd">        当branch为True时，将node的第一个后继视为if_node，否则将另一个后继视为if_node</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下结构：</span>
+<span class="sd">            node {stmt}</span>
+<span class="sd">            ├── if_node {stmt1}</span>
+<span class="sd">            |     └── if_succ</span>
+<span class="sd">            └── if_succ</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt; if(cond) {stmt1}}</span>
+<span class="sd">            └── if_succ</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :param true_branch: 尝试化简为if结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，</span>
+<span class="sd">            否则条件为`cond = cond.logical_not()`</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_if_continue">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if_continue">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if_continue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if-continue结构，避免使用goto</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下CFG结构</span>
+<span class="sd">            node {stmt}</span>
+<span class="sd">            ├── if_node</span>
+<span class="sd">            |     └── node (跳转到循环头)</span>
+<span class="sd">            └── if_succ</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt; if(cond) continue;}</span>
+<span class="sd">            └── if_succ</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :param true_branch: 尝试化简为if-continue结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，</span>
+<span class="sd">            否则条件为`cond = cond.logical_not()`</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_if_break">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if_break">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if_break</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if-break结构，避免使用goto</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下CFG结构</span>
+<span class="sd">            node {stmt}</span>
+<span class="sd">            ├── if_node</span>
+<span class="sd">            |     └── exit (跳转到内层循环出口)</span>
+<span class="sd">            └── if_succ</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt; if(cond) break;}</span>
+<span class="sd">            └── if_succ</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :param true_branch: 尝试化简为if-break结构的分支方向，为True时if语句的条件为`cond = get_cond_expr(node)`，</span>
+<span class="sd">            否则条件为`cond = cond.logical_not()`</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">succs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">succs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">if_node</span> <span class="o">=</span> <span class="n">succs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">true_branch</span> <span class="k">else</span> <span class="n">succs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">if_succ</span> <span class="o">=</span> <span class="n">succs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">true_branch</span> <span class="k">else</span> <span class="n">succs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loop_succ</span><span class="p">(</span><span class="n">if_node</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">cond</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cond_expr</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">true_branch</span><span class="p">:</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="n">cond</span><span class="o">.</span><span class="n">logical_not</span><span class="p">()</span>
+
+        <span class="n">break_stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_break_stmt</span><span class="p">(</span><span class="n">loop</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">if_stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_if_stmt</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="p">[</span><span class="n">break_stmt</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduce_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">if_stmt</span><span class="p">],</span> <span class="p">[</span><span class="n">if_succ</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="StructureConverter.try_reduce_if_else">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter.StructureConverter.try_reduce_if_else">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_reduce_if_else</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将给定的节点化简为if-else结构，避免使用goto</span>
+
+<span class="sd">        具体来说::</span>
+
+<span class="sd">            识别如下CFG结构</span>
+<span class="sd">            node {stmt}</span>
+<span class="sd">            ├── if_node {stmt1}</span>
+<span class="sd">            |     └── if_succ</span>
+<span class="sd">            └── else_node {stmt2}</span>
+<span class="sd">                └── else_succ (if_succ == else_succ)</span>
+<span class="sd">            将其化简为</span>
+<span class="sd">            node {stmt; if(cond) {stmt1} else {stmt2};}</span>
+<span class="sd">            └── if_succ</span>
+
+<span class="sd">        :param node: 待化简的控制流图节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现该方法</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

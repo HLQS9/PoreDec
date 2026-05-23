@@ -1,0 +1,470 @@
+项目: 简易反编译器的实现
+=============================
+
+在本项目中你将基于PoREDec框架实现一个简易的反编译器。
+通过项目实践，你能更深层次地理解课程中介绍的反编译原理，包括: 
+1. 反编译器如何构建控制流图
+2. 反编译器如何如何通过分析控制流图，识别和生成高级语言中结构化代码，如``while``。
+
+物料清单
+---------------------
+
+以下是项目仓库的结构::
+
+    .
+    ├── benchmarks # 测试样例
+    ├── docs-html # 文档, 用网页浏览器打开index.html即可查看实验手册
+    ├── Makefile # 用于运行测试用例
+    └── poredec # 反编译器源代码
+
+
+其中需要特别注意的是 ``benchmarks`` 文件夹和 ``poredec`` 文件夹。
+
+1. **poredec** 文件夹: 包含了反编译器的所有源码文件，其中有两个源代码文件需要在本项目中实现
+    1. ``frontend/cfg_builder.py`` : 对应 :ref:`task1`
+    2. ``backend/structure_converter.py`` : 对应 :ref:`task2`
+2. **benchmarks** 文件夹: 包含了检验任务完成结果所需的物料，主要有三个部分
+    1. tasks.csv: 目标函数列表，需要在这些函数上完成控制流图生成和结构化代码生成任务
+    2. binaries: 目标二进制程序
+    3. references: 两个任务的参考结果，用于 :ref:`testing`
+        - .png后缀的文件: 目标函数的控制流图生成参考结果
+        - .c后缀的文件: 目标函数的结构化代码生成参考结果
+3. **docs-html** 文件夹: 包含了本项目的文档，使用网页浏览器打开 ``index.html`` 即可查看实验手册。
+4. **Makefile**: 用于运行测试用例的脚本，使用 ``make`` 命令即可运行所有测试用例。
+
+背景介绍
+---------------------
+
+反编译器是一种将机器码转换为高级语言代码的工具。反编译前端负责将机器码转换为中间表示(IR)，后端负责将IR转换为高级语言代码。
+
+.. figure:: static/decompiler.png
+    :align: center
+    :width: 80%
+    :alt: 反编译器架构
+
+
+控制流图构建
+^^^^^^^^^^^^^^^^^^^^^
+
+反编译器前端的一个重要任务是构建控制流图 (CFG)，控制流图是一种图结构，它可以表示程序的控制流转移关系。
+因此，构建控制流图对于代码分析优化和高级语言代码生成非常重要。
+
+控制流图是一个有向图，其节点也称为基本块；其边表示程序执行的可能方向。因此构建控制流图有两个主要步骤: 识别基本块和连接基本块。
+
+首先为了识别基本块，我们先来了解一下什么是基本块。
+基本块是一组连续的指令，其中只有一个入口和一个出口。
+入口称为基本块的起始指令，出口称为基本块的结束指令，基本块也可以只包含一条指令，该指令既是起始指令又是终止指令。
+因此，识别基本块的关键是识别基本块的起始指令和终止指令。
+具体来说，起始指令的特点是没有前继指令或前继指令中包含终止指令，终止指令的特点是没有后继指令或后继指令中包含起始指令。
+通过分析指令的跳转关系，我们可以识别基本块的起始指令和终止指令，从而识别基本块。
+
+在识别基本块之后，我们需要连接基本块。这一步仅需要将终止指令所在基本块与其后继指令所在基本块连接起来即可。
+
+结构化代码生成
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+反编译器后端为了产生高级语言代码，需要从控制流图中恢复高级语言代码中的代码结构，包括循环、条件语句等。这一过程称为结构化代码生成。
+
+结构化代码生成的关键在于实现化简规则，化简规则包括两方面能力：
+一是从控制流图中识别高级语言代码中的结构，
+二是通过化简将识别到的包含多个节点的控制流结构转换为简单的包含高级语言代码结构的节点。
+
+由于不同的高级语言代码的结构会产生不同的控制流结构，因此结构化代码生成需要使用不同的化简规则。
+根据规则的通用性，化简规则可以分为两类：针对性规则和通用规则。
+
+**针对性规则** 是针对特定的高级语言代码结构设计的规则，如循环、条件语句等，其目的在于将控制流结构转化为不包含goto语句的高级语言代码结构。
+之所以不产生goto是因为在许多高级语言编程场景中goto语句会降低代码的可读性。
+
+**通用规则** 也称为goto规则，是可以确保控制流图完全化简——化简到只剩下一个节点的化简规则。引入通用规则是因为一些复杂的高级语言代码实现，如嵌套循环，会产生复杂的控制流图，无法被针对性规则完全化简。
+具体来说通用规则将控制流图中的任意节点及其后继节点化简为含有goto的高级语言代码，而不会破坏代码语义。
+
+.. figure:: static/cfg-example.png
+    :align: center
+    :width: 40%
+    :alt: 控制流图
+
+
+例如，上图所示的控制流图可以使用通用规则完全化简为以下代码：
+
+.. code-block:: c
+
+    𝐶_1: if (𝑐_1) goto 𝑁_1; else goto 𝐶_2;
+    𝑁_1: n_1; goto 𝐶_1;
+    𝐶_2: if (𝑐_2) goto 𝑁_1; else goto 𝑁_3;
+    𝑁_3: n_3; if (𝑐_3) goto 𝐶_1; else goto 𝑁_4;
+    𝑁_2: n_2;
+    𝑁_4: n_4;
+
+
+PoREDec框架
+^^^^^^^^^^^^^^^^^^^^^
+
+PoREDec是一个基于Python的教学用反编译框架，它实现了基础的反编译功能组建。
+在本项目中，我们将基于PoREDec框架实现反编译器的控制流图构建和结构化代码生成功能。
+
+:ref:`overview` 介绍了PoREDec框架的组成和工作流程。
+
+
+准备工作
+---------------------
+
+本部分介绍了项目所需的准备工作。
+
+环境准备和测试
+^^^^^^^^^^^^^^^^^^^^^
+
+首先从git上拉取本次PJ的代码仓库。
+
+接下来，我们来测试环境是否可用。
+
+1. 启用venv环境: 在虚拟机中打开终端，输入 ``source ~/l8_env/bin/activate`` 输入完成后能够看到Prompt中显示 ``(l8_env)`` 字样，这说明venv环境已经启用。注意：后续测试时均需确保venv环境已提前启用，否则测试会报错。
+
+.. figure:: static/ip-addr.png
+    :align: center
+    :width: 40%
+    :alt: 启用venv环境
+
+2. 测试代码: 在虚拟机中进入之前拉取的代码仓库，输入 ``make`` 命令，
+
+.. figure:: static/ip-addr.png
+    :align: center
+    :width: 40%
+    :alt: 查询虚拟机IP
+
+VSCode安装
+^^^^^^^^^^^^^^^^^^^^^
+
+首先，我将介绍如何配置Visual Studio Code (VSCode)。
+
+虚拟机中已经安装好了VSCode，可以直接使用。如果你想在宿主机本地环境中使用VSCode，可以参考以下步骤连接到虚拟机环境。
+
+1. 从 `官网 <https://code.visualstudio.com>`_ 下载并安装Visual Studio Code (VSCode)
+2. 安装远程开发扩展：打开VSCode，点击以下链接安装VSCode扩展 
+3. 连接到虚拟机环境
+    * 确保虚拟机打开并运行，点击VSCode左下角的绿色按钮，选择 ``Remote-SSH: Connect to Host...`` 或 ``链接到主机``
+    * 在弹出的提示窗口输入 ``pore@<虚拟机IP>`` 后按下回车连接。其中 ``<虚拟机IP>`` 在虚拟机终端中输入 ``ip addr`` 命令查询，如下图所示。
+    * 在弹出的提示窗口中输入密码 ``pore`` 连接到虚拟机环境。
+
+.. figure:: static/ip-addr.png
+    :align: center
+    :width: 40%
+    :alt: 查询虚拟机IP
+
+    查询虚拟机IP
+
+在打开虚拟机中的VSCode，或远程连接到虚拟机环境后，你可以在VSCode中打开位于虚拟机中的项目文件夹 ``PoREDec`` ，并继续进行下面的步骤。
+如果你远程连接到虚拟机环境，可能需要在虚拟机中安装 **预览版** ``Python插件 vscode:extension/ms-python.python`` 。
+
+VSCode Python解释器配置
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+为了方便后续实验，建议进一步配置Python环境。
+
+1. 首先打开任意.py结尾的文件，例如 ``poredec/__init__.py``。
+2. 点击右下角的Python版本选择器
+3. 在提示框中选择 ``输入解释器路径...``
+4. 输入 ``/home/pore/l8_env/bin/python``
+
+.. figure::static/env-select.png
+    :align: center
+    :width: 40%
+    :alt: 切换Python解释器
+
+    切换Python解释器
+
+完成Python环境配置后输入 ``Ctrl+<键盘上Tab上方的按键>`` 打开终端，可以在Prompt上方看到 ``(l8_env)`` 字样，这表示Python环境已经切换成功。
+这一步骤有两个用途: 1. 在代码编写时提供正确的代码引用; 2. 从VSCode启动终端会自动启用venv环境。
+
+VSCode调试环境配置
+^^^^^^^^^^^^^^^^^^^^^
+
+调试可以帮助理解代码和分析代码异常，为了方便后续开发中的错误诊断，建议在VSCode中配置调试环境。以下是具体步骤:
+
+1. 创建launch.json文件: 在VSCode中点击左侧的调试按钮，点击 ``创建launch.json文件`` 按钮，选择 ``Python`` 作为环境。
+
+.. figure:: static/vscode-debug-1.png
+    :align: center
+    :width: 40%
+    :alt: 创建launch.json文件
+
+2. 填写调试配置
+
+以下是调试配置文件的示例，其中包含了两个调试配置，分别用于调试所有测例和调试单个测例。
+你可以将以下代码复制到上一步创建的 ``.vscode/launch.json`` 文件中，覆盖原有的内容。
+
+.. code-block:: json
+
+    {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "调试所有测例",
+                "type": "debugpy",
+                "request": "launch",
+                "module": "poredec",
+                "console": "integratedTerminal",
+                "args": ["--tasks", "benchmarks/tasks.csv"],
+                "justMyCode": true
+            },
+            {
+                "name": "调试单个测例",
+                "type": "debugpy",
+                "request": "launch",
+                "module": "poredec",
+                "console": "integratedTerminal",
+                "args": [
+                    "--binary", "benchmarks/binaries/httpd",
+                    "--function", "0X4E934"
+                ],
+                "justMyCode": true
+            },
+        ]
+    }
+
+
+3. 选择调试配置: 由于我们创建了两个调试配置，因此在调试时需要选择要使用的调试配置。点击左侧的调试按钮，点击 ``选择要运行的配置`` 按钮，选择 ``调试所有测例`` 或 ``调试单个测例``。
+
+.. figure:: static/vscode-debug-3.png
+    :align: center
+    :width: 40%
+    :alt: 选择调试配置
+
+4. 添加代码断点: 在代码中添加断点，点击代码行号左侧的空白处，或者在代码行上右键点击 ``添加断点`` 按钮。
+
+.. figure:: static/vscode-debug-4.png
+    :align: center
+    :width: 40%
+    :alt: 添加代码断点
+
+5. 开始调试: 点static/vscode-debug-5.png击左侧的调试按钮，点击 ``开始调试`` 按钮，或者直接按下 ``F5`` 键开始调试。
+
+.. figure:: static/vscode-debug-5.png
+    :align: center
+    :width: 40%
+    :alt: 开始调试
+
+更多调试方法请参考VSCode官方文档。
+
+
+【可选】VSCode 图片查看扩展安装
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+后续实验中的部分输出以图片形式呈现，为了方便在VSCode中直接查看图片，建议在VSCode中安装Image Preview插件
+
+.. figure::static/vscode-image-preview.png.png
+    :align: center
+    :width: 40%
+    :alt: 安装Image Preview插件 
+
+
+.. _task1:
+
+任务1: 控制流图构建
+---------------------
+
+根据代码模版，结合课上介绍的知识及代码注释，实现控制流图构建功能。控制流图中的基本块必须满足以下要求：同一处地址的指令不会同时出现在多个基本块中。
+
+.. figure:: static/cfg-build-example.png
+    :align: center
+    :width: 80%
+    :alt: 控制流图构建示例
+
+    控制流图构建示例
+
+代码模版 :py:mod:`poredec.frontend.cfg_builder` 中包含了控制流图构建器的类定义，以及构建控制流图的主要步骤，请仔细阅读并实现。
+
+.. literalinclude:: ../../poredec/frontend/cfg_builder.py
+    :language: python
+    :linenos:
+
+.. _task2:
+
+任务2: 结构化代码生成
+---------------------
+
+在这个任务中你需要基于模版 :py:mod:`~.structure_converter` 实现8条化简规则，包括2条通用规则和6条针对性规则。
+
+模版中已经实现了化简控制流图的框架，包括 :py:meth:`~.StructureConverter.reduce_cfg` , :py:meth:`~.StructureConverter.reduce_node_by_goto` , :py:meth:`~.StructureConverter.reduce_node_by_rule` , :py:meth:`~.StructureConverter.completely_reduce_loop` 。
+你需要在代码模版中实现其余方法，其中每一个方法代表一个具体的化简规则。
+
+通用规则:
+
+* :py:meth:`~.try_reduce_goto_sequence` : 化简后继数量为1的节点，产生goto语句
+* :py:meth:`~.try_reduce_goto_branch` : 化简后继数量为2的节点，化简为分支体为goto语句的if-else结构
+
+针对性规则:
+
+* :py:meth:`~.try_reduce_sequence` : 化简顺序结构
+* :py:meth:`~.try_reduce_while_true` : 化简为while(1)结构
+* :py:meth:`~.try_reduce_do_while` : 化简do-while结构
+* :py:meth:`~.try_reduce_if` : 化简if结构
+* :py:meth:`~.try_reduce_if_continue` : 化简if-continue结构
+* :py:meth:`~.try_reduce_if_else` : 化简if-else语句
+
+建议先实现通用规则，确保通用规则能够完全化简控制流图，然后再实现针对性规则减少控制流图中的goto语句。
+
+在实现化简规则时，你会使用 :py:class:`~.StructureConverterMixin` 类中的四类方法。
+
+* 获取控制流图节点的前继节点和后继节点
+    * :py:meth:`~.StructureConverterMixin.successors` : 获取后继节点列表
+    * :py:meth:`~.StructureConverterMixin.predecessors` : 获取前驱节点列表
+* 循环分析
+    * :py:meth:`~.StructureConverterMixin.get_loop_for` : 获取节点所在的循环信息
+    * :py:meth:`~.StructureConverterMixin.is_loop_header` : 判断节点是否为循环头
+* 生成伪高级语言代码语句
+    * :py:meth:`~.StructureConverterMixin.get_cond_expr` : 获取给定节点True Branch的条件表达式。可以通过 :py:meth:`~.Expression.logical_not()` 方法获取False Branch的条件表达式
+    * :py:meth:`~.StructureConverterMixin.gen_goto_stmt` : 生成goto语句
+    * :py:meth:`~.StructureConverterMixin.gen_if_stmt` : 生成if或if-else语句
+    * :py:meth:`~.StructureConverterMixin.gen_while_stmt` : 生成while语句
+    * :py:meth:`~.StructureConverterMixin.gen_do_while_stmt` : 生成do-while语句
+    * :py:meth:`~.StructureConverterMixin.gen_continue_stmt` : 生成continue语句
+    * :py:meth:`~.StructureConverterMixin.gen_break_stmt` : 生成break语句
+* 化简节点
+    * :py:meth:`~.StructureConverterMixin.reduce_node` : 方法化简控制流图节点。
+
+更多API详情见 :py:class:`~.StructureConverterMixin`
+
+.. literalinclude:: ../../poredec/backend/structure_converter.py
+    :language: python
+    :linenos:
+
+.. _testing:
+
+测试和缺陷分析
+---------------------
+
+在完成代码编写后，你需要对代码进行测试，以确保代码的正确性，并且诊断代码中存在的问题。
+
+在本项目中，我们提供了一些测试样例和参考结果，你可以使用这些测试样例来验证你的代码是否正确。
+测试样例位于 ``benchmarks`` 目录下，包含了20个测试样例。参考目录 ``benchmarks/references`` 下包含了任务一和任务二的参考结果。
+
+下面会分别介绍在任务一和任务二中如何测试和分析诊断代码缺陷。
+
+
+.. _task1_diag:
+
+任务一测试和缺陷分析
+^^^^^^^^^^^^^^^^^^^^^
+
+在 ``PoREDec`` 目录运行 ``make cfg`` 或者 ``python -m poredec --tasks benchmarks/tasks.csv --only-cfg``  命令。
+该命令会用你编写的控制流图构建器分析在所有的测试样例，如果代码中存在问题，会在控制台输出错误信息，你可以根据错误信息诊断代码问题。
+
+.. 如果代码中没有产生异常，则命令行会输出如下信息::
+
+    $ make cfg
+    反编译完成 20/20 目标程序: httpd 函数: 0X4E934                
+
+    反编译完成，结果存放在 ./outputs
+
+运行结果会保存在 ``outputs`` 输出目录下，每一个测试样例对应输出目录下的一个目录，该目录中包含以下内容
+
+* cfg-disassemble.png: 控制流图
+* cfg-pcode.png: 使用Pcode表示的控制流图 (可读性较差，不建议使用这个文件进行诊断)
+
+为了判断控制流图是否正确，你可以将 ``cfg-disassemble.png`` 文件与 ``benchmarks/references`` 参考目录下对应的 ``.png`` 图片进行对比。
+若两者结构一致，则说明控制流图构建正确，否则控制流图不满足要求。注意，与参考图片相比，可能存在一些细节上的差异，例如节点的顺序，在图的结构一致的情况下，这些都不影响控制流图的正确性。
+
+
+任务二测试和缺陷分析
+^^^^^^^^^^^^^^^^^^^^^
+
+在 ``PoREDec`` 目录运行 ``make`` 或者 ``python -m poredec --tasks benchmarks/tasks.csv`` 或者 命令。
+如果代码中存在问题，会在控制台输出错误信息，你可以根据错误信息诊断代码问题。
+
+.. 如果代码中没有产生异常，则命令行会输出如下信息::
+
+    $ make cfg
+    反编译完成 20/20 目标程序: httpd 函数: 0X4E934                
+
+    反编译完成，结果存放在 ./outputs
+
+输出的结构化代码同样会保存在 ``outputs`` 目录下对应测试样例目录中，结构化代码生成涉及的文件有以下几类:
+
+* decompiled.c: 结构化代码生成结果
+* decompiled_simplified.c: 精简后的结构化代码生成结果，删除了代码块中的语句，更容易看出代码的高级语言结构（建议先分析该文件是否生成正确）
+* cfg-structured.png: 控制流图化简结果
+* cfg-structured-disassemble.png: 使用汇编代码而非Pcode表示的结构化代码生成结果，代码长度更短一些，但是代码语义容易存在错误
+* debug-structure目录中的.png文件: 化简过程中的中间结果，例如 ``2-REDUCE#IF_ELSE@0x1066C.png`` 表示第二次化简事件使用了 ``IF_ELSE`` 规则化简了从 ``0x1066C`` 开始的控制流图节点，产生的控制流图保存在该文件中。
+* decompile.log: 化简过程中的日志，包含了化简规则的使用情况，节点删除情况等。每次运行的结果会追加到该文件中。如果要重新记录日志，可以删除该文件。
+
+参考结果目录 ``benchmarks/references`` 中包含以下参考结果:
+
+* TASK.c: ``decompiled.c`` 的标准答案版本。
+* TASK.simplified.c: ``decompiled_simplified.c`` 的标准答案版本。
+* TASK.ghidra.c: 由Ghidra反编译器生成的反编译代码，你生成的代码与该代码差异很大是正常现象。该文件仅用于理解PoREDec反编译器由于缺少了代码优化，与现代反编译器间仍存在巨大差异。
+
+你可以通过以下步骤逐步分析结构化代码生成过程中的错误
+
+1. 对比 ``outputs`` 目录下的 ``decompiled_simplified.c`` 与 ``benchmarks/references`` 目录下对应的 ``TASK.simplified.c`` 。若两者控制流语义存在差异，则说明生成的结构化代码生成可能存在错误。注意，有的时候两者代码不同，但是语义相同，这种情况下结构化代码生成结果也是正确的。
+2. 若上一步中发现存在错误，分析 ``debug-structure`` 中每一个化简步骤产生的中间结果，诊断是哪一个步骤出现了问题
+3. 确定哪一个步骤出现问题后，结合调试分析缺陷，并修改代码重新测试
+
+
+评分标准
+---------------------
+
+* 任务一
+    * 代码: 15分
+    * 报告: 35分
+* 任务二
+    * 代码: 15分
+    * 报告: 35分
+
+* 代码要求
+    * 不抄袭，不使用AI，否则将会被取消成绩。我们会做代码语义查重 (使用AI产生的相似代码也会被检测到)。
+    * 代码能够在测试样例上正确运行，产生符合预期的反编译效果。
+    * 将poredec源代码目录压缩后提交到elearning上, 提交的代码中只能修改poredec/frontend/cfg_builder.py和poredec/backend/structure_converter.py。其它代码修改可能会导致代码被判别为无法运行。
+
+* 报告要求
+    * 基本要求：逻辑清晰，步骤完整，符合报告模版规范
+    * 得分点一：结合代码，解释背后的原理
+    * 得分点二：结合实验结果，说明代码的有效性
+        * 若无法达成预期效果，需要详细描述问题分析过程，并阐明改进想法
+    * 得分点三：阐述心得体会
+
+报告模板
+---------------------
+
+以下是Markdown格式的解题报告，最终报告需提交PDF版本。
+
+.. code-block:: Markdown
+
+    # Project2 项目报告
+
+    * 姓名: 小张
+    * 学号: xxx
+
+    ## 1. 任务一: 控制流图构建
+
+    ### 1.1 实现思路
+
+    在这一部分**概括地**介绍你实现控制流图构建算法的思路和方法。
+
+    ### 1.2 代码实现
+
+    在这一部分**展开**介绍控制流图构建的代码实现。结合代码和代码注释加以说明你是如何实现控制流图构建算法的。
+    在实现过程中，你可能会遇到一些问题，或者有一些想法，这些都可以在这一部分中进行描述。
+
+    ### 1.3 结果分析
+
+    选择一个以base64或httpd开头的测试用例，结合图片、代码说明你的算法如何将汇编代码转换为控制流图的。
+    在分析结果时，附上必要的图片和代码片段。
+
+    ## 2. 任务二: 结构化代码生成
+
+    ### 2.1 实现思路
+
+    在这一部分**概括地**介绍你实现结构化代码生成算法的思路和方法。
+
+    ### 2.1 代码实现
+
+    在这一部分**展开**介绍结构化代码生成的代码实现。结合代码和代码注释加以说明你是如何实现结构化代码生成算法的。
+    在实现过程中，你可能会遇到一些问题，或者有一些想法，这些都可以在这一部分中进行描述。
+
+    ### 2.3 结果分析
+
+    对于每一种化简规则，分别选择一个测试用例，结合图片、代码说明你的算法如何实现结构化。
+
+    ## 总结
+
+    在这一部分**总结**你在本项目中的收获和心得体会。

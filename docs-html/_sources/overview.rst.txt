@@ -1,0 +1,186 @@
+.. _overview:
+
+PoREDec反编译器概览
+=====================
+
+
+源代码文件结构
+---------------------
+
+以下是poredec源码目录结构::
+
+    poredec
+    ├── __init__.py
+    ├── __main__.py
+    ├── models # 数据定义
+    │   ├── cfg.py
+    │   ├── expr.py
+    │   ├── __init__.py
+    │   ├── insn.py
+    │   ├── lift_mode.py
+    │   ├── loop.py
+    │   ├── reduce_event.py
+    │   └── stmt.py
+    ├── frontend # 反编译前端
+    │   ├── __init__.py
+    │   ├── cfg_builder.py # 任务一：构建控制流图
+    │   ├── lifter.py
+    │   └── loader.py
+    ├── backend # 反编译后端
+    │   ├── __init__.py
+    │   ├── loop_analyzer.py
+    │   ├── structure_converter_mixin.py # 实现了结构化代码生成依赖的API
+    │   └── structure_converter.py # 任务二：生成结构化代码
+    └── utils # 反编译辅助工具
+        └── __init__.py
+        ├── display.py
+
+类架构
+---------------
+
+.. graphviz::
+    :align: center
+    :caption: PoREDec类架构图
+
+    digraph ClassGraph {
+        rankdir=TD;
+        graph [fontsize=10 fontname="Verdana" compound=true];
+        node [fontsize=10 fontname="Verdana" shape=record];
+
+        subgraph models {
+            node [shape=box, style=filled, color=lightyellow];
+            label="models (数据定义)"
+
+            models [style=invisible]
+
+            # insn.py 指令
+            "Insn"
+            "DisasInsn"
+            "PcodeInsn"
+
+            # expr.py 表达式
+            "Expression"
+            "ConstExpr"
+            "VarExpr"
+            "NotExpr"
+
+            # stmt.py 语句
+            "Statement"
+            "PcodeStmt"
+            "GotoStmt"
+            "IfStmt"
+            "WhileStmt"
+            "DoWhileStmt"
+            "ContinueStmt"
+            "BreakStmt"
+            "SwitchStmt"
+
+            # cfg.py 控制流图
+            "CFGNode"
+            "ControlFlowGraph"
+
+            # loop.py 循环
+            "Loop"
+            "LoopInfo"
+
+            # Insn -> DisasInsn [label="派生"]
+            # Insn -> PcodeInsn [label="派生"]
+            # Insn -> Statement [label="派生"]
+
+            Expression -> ConstExpr [label="派生"]
+            Expression -> VarExpr [label="派生"]
+            Expression -> NotExpr [label="派生"]
+
+            Statement -> PcodeStmt [label="派生"]
+            Statement -> GotoStmt [label="派生"]
+            Statement -> IfStmt [label="派生"]
+            Statement -> WhileStmt [label="派生"]
+            Statement -> DoWhileStmt [label="派生"]
+            Statement -> ContinueStmt [label="派生"]
+            Statement -> BreakStmt [label="派生"]
+            Statement -> SwitchStmt [label="派生"]
+
+            WhileStmt -> Expression [label="包含"]
+            DoWhileStmt -> Expression [label="包含"]
+            IfStmt -> Expression [label="包含"]
+
+            ControlFlowGraph -> CFGNode [label="包含"]
+            CFGNode -> Insn [label="包含"]
+
+            LoopInfo -> Loop [label="包含"]
+        }
+
+        subgraph frontend {
+            node [shape=box, style=filled, color=lightgreen]
+
+            frontend [style=invisible]
+
+            "Loader"
+            "Lifter"
+            "CFGBuilder" [label="CFGBuilder\n(任务一)"]
+
+            CFGBuilder -> Lifter [label="依赖"]
+            Lifter -> Loader [label="依赖"]
+        }
+
+        Lifter -> DisasInsn [label="反汇编"]
+        Lifter -> PcodeInsn [label="中间代码生成"]
+        CFGBuilder -> ControlFlowGraph [label="构建"]
+
+        subgraph backend {
+            node [shape=box, style=filled, color=lightblue]
+
+            backend [style=invisible]
+
+            "LoopAnalyzer"
+            "StructureConverter" [label="StructureConverter\n(任务二)"]
+            "StructureConverterMixin"
+
+            StructureConverter -> StructureConverterMixin [label="继承"]
+        }
+
+        LoopAnalyzer -> LoopInfo [label="循环分析"]
+        StructureConverterMixin -> Statement [label="高级语言代码生成"]
+        StructureConverterMixin -> LoopInfo [label="使用"]
+        StructureConverterMixin -> ControlFlowGraph [label="使用"]
+    }
+
+其中 ``CFGBuilder`` 和 ``StructureConverter`` 是本次项目需要实现的两个主要类。
+
+
+工作流程
+---------------
+
+PoREDec反编译器的工作流程如下
+
+.. graphviz::
+    :align: center
+    :caption: PoREDec工作流程图
+
+    digraph Workflow {
+        rankdir=TD
+        node [shape=box, style=filled]
+
+        "Binary"   [label="二进制程序" , shape=folder, style="", color=white]
+        "Function" [label="目标地址"   , shape=note, style="", color=white]
+        "CFG"      [label="控制流图"   , shape=note, style="", color=white]
+        "Loop"     [label="循环信息"   , shape=note, style="", color=white]
+        "HighCode" [label="(伪)高级语言代码", shape=component, style="", color=white]
+
+        "Loader"
+        "Lifter"
+        "CFGBuilder"
+        "LoopAnalyzer"
+        "StructureConverter"
+
+        "Binary" -> "Loader"
+        "Function" -> "Loader"
+        "Loader" -> "Lifter" [label="函数机器码"]
+        "Lifter" -> "CFGBuilder" [label="汇编或P-code代码"]
+        "CFGBuilder" -> "CFG"
+        "CFG" -> "LoopAnalyzer"
+        "LoopAnalyzer" -> "Loop"
+        "Loop" -> "StructureConverter"
+        "CFG" -> "StructureConverter"
+        "StructureConverter" -> "HighCode"
+    }

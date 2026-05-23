@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.models.insn &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.models.insn</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.models.insn 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">本模块定义了指令相关的类</span>
+
+<span class="sd">- Insn: 指令基类</span>
+<span class="sd">- PcodeInsn: Pcode指令</span>
+<span class="sd">- DisasInsn: 反汇编指令</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">capstone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">PcodePrettyPrinter</span><span class="p">,</span> <span class="n">OpCode</span><span class="p">,</span> <span class="n">PcodeOp</span><span class="p">,</span> <span class="n">Varnode</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Insn&quot;</span><span class="p">,</span> <span class="s2">&quot;PcodeInsn&quot;</span><span class="p">,</span> <span class="s2">&quot;DisasInsn&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Insn">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.insn.Insn">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Insn</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;指令基类&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;指令字符串表示&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;子类应该实现这个方法&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">address</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;指令地址&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;子类应该实现这个方法&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span></div>
+
+
+
+<div class="viewcode-block" id="PcodeInsn">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.insn.PcodeInsn">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PcodeInsn</span><span class="p">(</span><span class="n">Insn</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pcode指令</span>
+
+<span class="sd">    :ivar disas_insn: 所属的反汇编指令</span>
+<span class="sd">    :ivar idx: 指令索引</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pretty_printer</span> <span class="o">=</span> <span class="n">PcodePrettyPrinter</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">:</span> <span class="n">PcodeOp</span><span class="p">,</span> <span class="n">disas_insn</span><span class="p">:</span> <span class="s2">&quot;DisasInsn&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">op</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disas_insn</span> <span class="o">=</span> <span class="n">disas_insn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">address</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;指令地址&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">disas_insn</span><span class="o">.</span><span class="n">address</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opcode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpCode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;P-code的操作码&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">opcode</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Varnode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;P-code的输入变量列表&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">inputs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Varnode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;P-code的输出变量&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">output</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretty_printer</span><span class="o">.</span><span class="n">fmt_op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">disas_insn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">PcodeInsn</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">disas_insn</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">disas_insn</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">idx</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DisasInsn">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.insn.DisasInsn">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DisasInsn</span><span class="p">(</span><span class="n">Insn</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;表示Capstone反汇编得到的指令</span>
+<span class="sd">    :ivar address: 指令地址</span>
+<span class="sd">    :ivar mnemonic: 指令助记符</span>
+<span class="sd">    :ivar op_str: 指令操作数字符串</span>
+<span class="sd">    :ivar size: 指令长度</span>
+<span class="sd">    :ivar raw_bytes: 指令原始字节</span>
+
+<span class="sd">    :ivar is_ret: 是否是返回指令</span>
+<span class="sd">    :ivar is_call: 是否是调用指令</span>
+<span class="sd">    :ivar is_jump: 是否是跳转指令</span>
+<span class="sd">    :ivar is_cond: 是否是条件跳转指令</span>
+<span class="sd">    :ivar succs: 后继指令地址列表</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">mnemonic</span><span class="p">,</span> <span class="n">op_str</span><span class="p">,</span> <span class="n">raw_bytes</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">mnemonic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">op_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_bytes</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">raw_bytes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ret</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_call</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_jump</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cond</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">succs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">address</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;指令地址&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#08x</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mnemonic</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op_str</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="DisasInsn.from_cs_insn">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.insn.DisasInsn.from_cs_insn">[文档]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cs_insn</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cs_insn</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;根据给定的Capstone指令创建一个LowInsn对象</span>
+<span class="sd">        :param cs_insn: 给定的指令</span>
+<span class="sd">        :type cs_insn: class:`capstone.CsInsn`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">insn</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">address</span><span class="o">=</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+            <span class="n">mnemonic</span><span class="o">=</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span>
+            <span class="n">op_str</span><span class="o">=</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">op_str</span><span class="p">,</span>
+            <span class="n">raw_bytes</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">bytes</span><span class="p">),</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">insn</span><span class="o">.</span><span class="n">is_ret</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_ret</span><span class="p">(</span><span class="n">cs_insn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">is_ret</span><span class="p">:</span>
+            <span class="n">insn</span><span class="o">.</span><span class="n">succs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="n">insn</span>
+
+        <span class="n">next_addr</span> <span class="o">=</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">insn</span><span class="o">.</span><span class="n">succs</span> <span class="o">=</span> <span class="p">[</span><span class="n">next_addr</span><span class="p">]</span>
+
+        <span class="n">insn</span><span class="o">.</span><span class="n">is_call</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_call</span><span class="p">(</span><span class="n">cs_insn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">is_call</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">insn</span>
+
+        <span class="n">insn</span><span class="o">.</span><span class="n">is_jump</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_jump</span><span class="p">(</span><span class="n">cs_insn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">is_jump</span><span class="p">:</span>
+            <span class="n">insn</span><span class="o">.</span><span class="n">succs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_jump_targets</span><span class="p">(</span><span class="n">cs_insn</span><span class="p">)</span>
+            <span class="n">insn</span><span class="o">.</span><span class="n">is_cond</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_cond</span><span class="p">(</span><span class="n">cs_insn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">is_cond</span><span class="p">:</span>
+                <span class="n">insn</span><span class="o">.</span><span class="n">succs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_addr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">insn</span>
+
+        <span class="k">return</span> <span class="n">insn</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_cond</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cs_insn</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># ARM条件跳转指令的助记符列表</span>
+        <span class="n">conds</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;eq&quot;</span><span class="p">,</span>  <span class="c1"># Equal</span>
+            <span class="s2">&quot;ne&quot;</span><span class="p">,</span>  <span class="c1"># Not equal</span>
+            <span class="s2">&quot;cs&quot;</span><span class="p">,</span>  <span class="c1"># Same as &quot;hs&quot;</span>
+            <span class="s2">&quot;hs&quot;</span><span class="p">,</span>  <span class="c1"># Unsigned higher or same (or carry set).</span>
+            <span class="s2">&quot;cc&quot;</span><span class="p">,</span>  <span class="c1"># Same as &quot;lo&quot;</span>
+            <span class="s2">&quot;lo&quot;</span><span class="p">,</span>  <span class="c1"># Unsigned lower (or carry clear).</span>
+            <span class="s2">&quot;mi&quot;</span><span class="p">,</span>  <span class="c1"># Negative. The mnemonic stands for &quot;minus&quot;.</span>
+            <span class="s2">&quot;pl&quot;</span><span class="p">,</span>  <span class="c1"># Positive or zero. The mnemonic stands for &quot;plus&quot;.</span>
+            <span class="s2">&quot;vs&quot;</span><span class="p">,</span>  <span class="c1"># Signed overflow. The mnemonic stands for &quot;V set&quot;.</span>
+            <span class="s2">&quot;vc&quot;</span><span class="p">,</span>  <span class="c1"># No signed overflow. The mnemonic stands for &quot;V clear&quot;.</span>
+            <span class="s2">&quot;hi&quot;</span><span class="p">,</span>  <span class="c1"># Unsigned higher</span>
+            <span class="s2">&quot;ls&quot;</span><span class="p">,</span>  <span class="c1"># Unsigned lower or same</span>
+            <span class="s2">&quot;ge&quot;</span><span class="p">,</span>  <span class="c1"># Signed greater than or equal</span>
+            <span class="s2">&quot;lt&quot;</span><span class="p">,</span>  <span class="c1"># Signed less than</span>
+            <span class="s2">&quot;gt&quot;</span><span class="p">,</span>  <span class="c1"># Signed greater than</span>
+            <span class="s2">&quot;le&quot;</span><span class="p">,</span>  <span class="c1"># Signed less than or equal</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">mnemonic</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span> <span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="n">conds</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_jump</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cs_insn</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        判断给定的ARM指令是否是跳转指令</span>
+
+<span class="sd">        :param cs_insn: 给定的指令</span>
+<span class="sd">        :type cs_insn: class:`capstone.CsInsn`</span>
+<span class="sd">        :return: 如果该指令是跳转指令则返回True，否则返回False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">capstone</span><span class="o">.</span><span class="n">CS_GRP_JUMP</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_call</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cs_insn</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        判断给定的ARM指令是否是调用指令</span>
+
+<span class="sd">        :param cs_insn: 给定的指令</span>
+<span class="sd">        :type cs_insn: class:`capstone.CsInsn`</span>
+<span class="sd">        :return: 如果该指令是调用指令则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">capstone</span><span class="o">.</span><span class="n">CS_GRP_CALL</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_ret</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cs_insn</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        判断给定的ARM指令是否是返回指令</span>
+
+<span class="sd">        :param cs_insn: 给定的指令</span>
+<span class="sd">        :type cs_insn: class:`capstone.CsInsn`</span>
+<span class="sd">        :return: 如果该指令是返回指令则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># &#39;BX LR&#39;</span>
+        <span class="k">if</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">capstone</span><span class="o">.</span><span class="n">CS_GRP_JUMP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">op_str</span> <span class="o">==</span> <span class="s2">&quot;lr&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># &#39;POP {.., PC}&#39;</span>
+        <span class="k">if</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">==</span> <span class="s2">&quot;pop&quot;</span> <span class="ow">and</span> <span class="s2">&quot;pc&quot;</span> <span class="ow">in</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">op_str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># &#39;LDM SP!, {PC}&#39;</span>
+        <span class="k">if</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">mnemonic</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ldm&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;pc&quot;</span> <span class="ow">in</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">op_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># &#39;MOV PC, LR&#39;</span>
+        <span class="k">if</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">==</span> <span class="s2">&quot;mov&quot;</span> <span class="ow">and</span> <span class="s2">&quot;pc, lr&quot;</span> <span class="ow">in</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">op_str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_jump_targets</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cs_insn</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">jump_targets</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># direct jump</span>
+        <span class="k">if</span> <span class="n">cs_insn</span><span class="o">.</span><span class="n">operands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">capstone</span><span class="o">.</span><span class="n">arm</span><span class="o">.</span><span class="n">ARM_OP_IMM</span><span class="p">:</span>
+            <span class="n">jump_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cs_insn</span><span class="o">.</span><span class="n">operands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">imm</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jump_targets</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">DisasInsn</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">address</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

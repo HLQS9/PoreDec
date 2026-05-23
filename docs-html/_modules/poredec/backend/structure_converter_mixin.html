@@ -1,0 +1,741 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.backend.structure_converter_mixin &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.backend.structure_converter_mixin</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.backend.structure_converter_mixin 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">实现结构化分析的基础框架和通用API。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Queue</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpCode</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">ControlFlowGraph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.stmt</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Statement</span><span class="p">,</span>
+    <span class="n">IfStmt</span><span class="p">,</span>
+    <span class="n">GotoStmt</span><span class="p">,</span>
+    <span class="n">ContinueStmt</span><span class="p">,</span>
+    <span class="n">BreakStmt</span><span class="p">,</span>
+    <span class="n">WhileStmt</span><span class="p">,</span>
+    <span class="n">DoWhileStmt</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.expr</span><span class="w"> </span><span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">ConstExpr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.loop</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoopInfo</span><span class="p">,</span> <span class="n">Loop</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.reduce_event</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReduceRule</span><span class="p">,</span> <span class="n">ReduceEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGDisplayer</span><span class="p">,</span> <span class="n">CodeFormatter</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;StructureConverterMixin&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="StructureConverterMixin">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StructureConverterMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;代码结构化分析基础类，实现了基础框架和通用API</span>
+
+<span class="sd">    :param cfg: 待转换的控制流图</span>
+<span class="sd">    :param loop_info: 循环信息</span>
+<span class="sd">    :param dbg: 是否开启调试模式，开启时每次化简后都会打印控制流图</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cfg</span><span class="p">:</span> <span class="n">ControlFlowGraph</span><span class="p">,</span>
+        <span class="n">loop_info</span><span class="p">:</span> <span class="n">LoopInfo</span><span class="p">,</span>
+        <span class="n">intermediate_output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="n">cfg</span>
+        <span class="k">assert</span> <span class="n">loop_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_info</span> <span class="o">=</span> <span class="n">loop_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_output_dir</span> <span class="o">=</span> <span class="n">intermediate_output_dir</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_loops</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Loop</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop_headers_under_analysis</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop_header_stack</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 跳转目标节点，及其对应的goto语句</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">GotoStmt</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># 存放不需要再调用convert_node进行化简的节点</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_converted_nodes</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_events</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="StructureConverterMixin.convert">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.convert">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlFlowGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;结构化控制流图，结构化后的控制流图应该只包含一个节点，该节点中包含所有结构化语句。</span>
+
+<span class="sd">        :return: 结构化后的控制流图。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">convert_node</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">entry</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_goto_targets</span><span class="p">():</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">merge_goto_targets</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">replace_break_continue_outside_loop</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.convert_node">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.convert_node">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;完全化简一个节点，化简后该节点不包含后继节点</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 使用针对性的规则化简控制流图</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">any_reduced</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_cfg</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">any_reduced</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># 使用goto规则完全结构化控制流图</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">any_reduced</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_cfg</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_converted_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">any_reduced</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.reduce_cfg">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_cfg">[文档]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">by_rule</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;递归化简控制流图，尝试将多个节点化简为一个节点。</span>
+
+<span class="sd">        函数会使用广度优先搜索遍历控制流图中从给定节点可达的所有节点，并在尝试化简这些节点——将节点与其后继节点合并。</span>
+
+<span class="sd">        :param node: 待化简的节点</span>
+<span class="sd">        :param by_rule: 为True时使用针对性规则化简，否则使用通用(goto)规则</span>
+<span class="sd">        :param loop: 当给定loop时，只化简循环内的节点，否则化简所有node可达的节点。</span>
+<span class="sd">        :return: 如果节点被化简为结构化语句，则返回True</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.convert_goto_targets">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.convert_goto_targets">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_goto_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;化简所有未完全化简的goto目标节点。该方法可能需要多次调用，因为化简一个goto目标节点可能会使其它节点变得可化简。</span>
+
+<span class="sd">        :return: 如果有节点被化简，则返回True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 所有未被化简的goto目标节点</span>
+        <span class="n">unconverted_goto_targets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">goto_target</span>
+            <span class="k">for</span> <span class="n">goto_target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">goto_target</span><span class="p">)</span> <span class="ow">and</span> <span class="n">goto_target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converted_nodes</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">unconverted_goto_targets</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">any_reduced</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">goto_target</span> <span class="ow">in</span> <span class="n">unconverted_goto_targets</span><span class="p">:</span>
+            <span class="n">any_reduced</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_node</span><span class="p">(</span><span class="n">goto_target</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">any_reduced</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.clean_reduced_dangling_nodes">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.clean_reduced_dangling_nodes">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean_reduced_dangling_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;清理控制流图中由于针对性规则化简产生的孤立节点&quot;&quot;&quot;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">cfg</span><span class="o">.</span><span class="n">entry</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;删除化简的孤立节点: </span><span class="si">%#X</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.replace_break_continue_outside_loop">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.replace_break_continue_outside_loop">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replace_break_continue_outside_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;将循环外的break和continue替换为goto语句&quot;&quot;&quot;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">insns</span><span class="p">))</span>
+        <span class="c1"># 遍历控制流图，找到所有可能可以替换的goto语句的位置</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">loop_stmt</span><span class="p">,</span> <span class="n">insns</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">insns</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ContinueStmt</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">BreakStmt</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">loop_stmt</span><span class="p">:</span>
+                        <span class="n">insns</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GotoStmt</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">IfStmt</span><span class="p">):</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">true_body</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">false_body</span><span class="p">:</span>
+                        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">false_body</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">WhileStmt</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">DoWhileStmt</span><span class="p">):</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">stmt</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">body</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.merge_goto_targets">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.merge_goto_targets">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge_goto_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;尝试将goto语句替换为目标代码块，如果不能替换，则将目标代码块添加到CFG入口节点&quot;&quot;&quot;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
+
+        <span class="n">goto_stmt_target_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">goto_target</span><span class="p">,</span> <span class="n">goto_stmts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">goto_stmts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">goto_stmt</span> <span class="ow">in</span> <span class="n">goto_stmts</span><span class="p">:</span>
+                <span class="n">goto_stmt_target_map</span><span class="p">[</span><span class="n">goto_stmt</span><span class="p">]</span> <span class="o">=</span> <span class="n">goto_target</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">insns</span><span class="p">))</span>
+        <span class="c1"># 遍历控制流图，找到所有可能可以替换的goto语句的位置</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">node</span><span class="p">,</span> <span class="n">insns</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">insns</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">GotoStmt</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">stmt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">goto_stmt_target_map</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">goto_target</span> <span class="o">=</span> <span class="n">goto_stmt_target_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">graph</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">goto_target</span><span class="p">):</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">goto_target</span><span class="p">,</span> <span class="n">tasks</span><span class="o">=</span><span class="p">[])</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">goto_target</span><span class="p">)[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">insns</span><span class="p">,</span> <span class="n">idx</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">IfStmt</span><span class="p">):</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">true_body</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">false_body</span><span class="p">:</span>
+                        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">false_body</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">WhileStmt</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">DoWhileStmt</span><span class="p">):</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
+
+        <span class="c1"># 删除循环goto</span>
+        <span class="n">no_merge_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">simple_cycles</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+            <span class="n">no_merge_nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">(</span><span class="n">no_merge_nodes</span><span class="p">)</span>
+
+        <span class="n">remaining_goto_targets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">graph</span><span class="p">))):</span>
+            <span class="n">goto_targets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">goto_targets</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">goto_target</span> <span class="ow">in</span> <span class="n">goto_targets</span><span class="p">:</span>
+                <span class="n">tasks</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">goto_target</span><span class="p">)[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]</span>
+                <span class="n">base_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">insns</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">base_idx</span> <span class="o">+</span> <span class="n">idx</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;替换goto语句: </span><span class="si">%#X</span><span class="s2">[pos:</span><span class="si">%d</span><span class="s2">,size:</span><span class="si">%d</span><span class="s2">] -&gt; </span><span class="si">%#X</span><span class="s2">[size:</span><span class="si">%d</span><span class="s2">]&quot;</span><span class="p">,</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                        <span class="n">pos</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">insns</span><span class="p">),</span>
+                        <span class="n">goto_target</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">goto_target</span><span class="o">.</span><span class="n">insns</span><span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="n">insns</span><span class="p">[</span><span class="n">pos</span> <span class="p">:</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">goto_target</span><span class="o">.</span><span class="n">insns</span>
+                    <span class="n">base_idx</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">goto_target</span><span class="o">.</span><span class="n">insns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">remaining_goto_targets</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">goto_target</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">goto_target</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">remaining_goto_targets</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;添加未合并的goto_target: </span><span class="si">%#X</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">goto_target</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">goto_target</span><span class="o">.</span><span class="n">insns</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">goto_target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">goto_target</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">goto_target</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.reduce_node">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.reduce_node">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_node</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">],</span>
+        <span class="n">new_succs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">],</span>
+        <span class="n">extend</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;化简给定的CFG节点，将node中的指令替换为body中的指令，并将node的后继节点替换为succs中的节点</span>
+
+<span class="sd">        :param node: 待化简的节点</span>
+<span class="sd">        :param body: 待添加的指令序列</span>
+<span class="sd">        :param new_succs: 新的后继节点</span>
+<span class="sd">        :param extend: True表示将body中的指令追加到node中，否则替换node中的指令</span>
+
+<span class="sd">        :example:</span>
+
+<span class="sd">        &gt;&gt;&gt; self.reduce_node(node, [stmt], new_succs=[succ1, succ2], extend=True)</span>
+<span class="sd">        &gt;&gt;&gt; # 上述代码将node中的指令替换为`node.insns + [stmt]`，并将node的后继节点替换为succ1和succ2</span>
+<span class="sd">        &gt;&gt;&gt; self.reduce_node(node, [stmt], new_succs=[], extend=False)</span>
+<span class="sd">        &gt;&gt;&gt; # 上述代码将node中的指令替换为`[stmt]`，并标记node没有后继节点</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extend</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="n">old_succs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+        <span class="n">new_succs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_succs</span><span class="p">)</span>
+        <span class="n">succs_to_remove</span> <span class="o">=</span> <span class="n">old_succs</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">new_succs</span><span class="p">)</span>
+        <span class="n">succs_to_add</span> <span class="o">=</span> <span class="n">new_succs</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">old_succs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">([(</span><span class="n">node</span><span class="p">,</span> <span class="n">succ</span><span class="p">)</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">succs_to_remove</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="n">node</span><span class="p">,</span> <span class="n">succ</span><span class="p">)</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">succs_to_add</span><span class="p">])</span>
+
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">loop</span><span class="o">.</span><span class="n">header</span> <span class="o">==</span> <span class="n">node</span> <span class="ow">or</span> <span class="n">loop</span><span class="o">.</span><span class="n">back_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_loops</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_reduced_dangling_nodes</span><span class="p">()</span></div>
+
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># 以下方法用于访问CFG</span>
+    <span class="c1"># =========================================================================</span>
+<div class="viewcode-block" id="StructureConverterMixin.successors">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.successors">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">successors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取给定节点的后继节点</span>
+
+<span class="sd">        :example:</span>
+<span class="sd">        </span>
+
+<span class="sd">        &gt;&gt;&gt; succs = successors(node)</span>
+<span class="sd">        &gt;&gt;&gt; for succ in succs: pass # ...处理后继节点</span>
+<span class="sd">        &gt;&gt;&gt; succ_num = len(succs) # 获取后继节点的数量</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.predecessors">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.predecessors">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取给定节点的前驱节点</span>
+
+<span class="sd">        :example:</span>
+
+<span class="sd">        &gt;&gt;&gt; preds = predecessors(node)</span>
+<span class="sd">        &gt;&gt;&gt; for pred in preds: pass # ...处理前驱节点</span>
+<span class="sd">        &gt;&gt;&gt; pred_num = len(preds) # 获取前驱节点的数量</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span></div>
+
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># 以下方法用于循环分析</span>
+    <span class="c1"># =========================================================================</span>
+
+<div class="viewcode-block" id="StructureConverterMixin.get_loop_for">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_for">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_loop_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Loop</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取给定节点所在的循环，如果该循环在结构化过程中被化简，则返回其父循环；如果没有找到循环，则返回None&quot;&quot;&quot;</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_info</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">loop</span> <span class="ow">and</span> <span class="n">loop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_loops</span><span class="p">:</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">parent</span>
+
+        <span class="k">return</span> <span class="n">loop</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.get_loop_succs">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_loop_succs">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_loop_succs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取给定节点的循环后继节点&quot;&quot;&quot;</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">loop</span><span class="o">.</span><span class="n">get_successors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.is_loop_header">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_loop_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">loop</span><span class="p">:</span> <span class="n">Loop</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;检查给定的节点是否是循环的头部</span>
+
+<span class="sd">        :param node: 待检查的节点</span>
+<span class="sd">        :param loop: 待检查的循环，如果给定该参数，则只判断节点是否是该循环的头部</span>
+<span class="sd">        :return: 如果是循环的头部，且该循环没有在结构化过程中被化简，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">loop</span><span class="o">.</span><span class="n">header</span> <span class="o">==</span> <span class="n">node</span>
+
+        <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_info</span><span class="o">.</span><span class="n">get_loop_for</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">is_header</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">loop</span> <span class="ow">and</span> <span class="n">loop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_loops</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.is_loop_succ">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_succ">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_loop_succ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">loop</span><span class="p">:</span> <span class="n">Loop</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;检查给定的节点是否是循环的后继节点</span>
+
+<span class="sd">        :param node: 待检查的节点</span>
+<span class="sd">        :param loop: 待检查的循环</span>
+<span class="sd">        :return: 如果是循环的后继节点，且该循环没有在结构化过程中被化简，则返回True，否则返回False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">loop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_loops</span> <span class="ow">and</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">loop</span><span class="o">.</span><span class="n">get_successors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.enter_loop">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.enter_loop">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enter_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;标志进入循环，此时调用 meth:`is_loop_header_under_analysis` 返回True</span>
+
+<span class="sd">        :param node: 循环的头部</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop_header_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop_headers_under_analysis</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">ENTER_LOOP</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.leave_loop">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.leave_loop">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">leave_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;标志离开循环，此时调用 meth:`is_loop_header_under_analysis` 返回False&quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop_header_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop_headers_under_analysis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit_reduce_event</span><span class="p">(</span><span class="n">ReduceRule</span><span class="o">.</span><span class="n">LEAVE_LOOP</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.is_loop_header_under_analysis">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_header_under_analysis">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_loop_header_under_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;检查给定的节点是否是正在分析的循环的头部</span>
+
+<span class="sd">        :param node: 待检查的节点</span>
+<span class="sd">        :return: 如果是循环的头部，则返回True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop_headers_under_analysis</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.is_loop_reduced">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_loop_reduced">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_loop_reduced</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="p">:</span> <span class="n">Loop</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;检查给定的节点是否在结构化过程中被化简&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">loop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_loops</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.is_back_edge">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.is_back_edge">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_back_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;判断u-&gt;v是否是循环的回边&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_info</span><span class="o">.</span><span class="n">loops</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">loop</span><span class="o">.</span><span class="n">back_edge</span> <span class="o">==</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># 以下方法用于生成结构化代码语句</span>
+    <span class="c1"># =========================================================================</span>
+
+<div class="viewcode-block" id="StructureConverterMixin.get_cond_expr">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_cond_expr">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cond_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取给定节点True Branch的条件表达式</span>
+
+<span class="sd">        :param node: 节点不能已经被化简，即不能已经作为 meth:`reduce_node` 的调用参数</span>
+<span class="sd">        :return: 条件表达式</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">insn</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">insns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">insn</span><span class="p">,</span> <span class="s2">&quot;opcode&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">opcode</span> <span class="o">!=</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">CBRANCH</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ConstExpr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">insn</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.gen_continue_stmt">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_continue_stmt">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_continue_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContinueStmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生成continue语句</span>
+<span class="sd">        :param target_node: continue跳转到的目标节点</span>
+<span class="sd">        :return: continue语句</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stmt</span> <span class="o">=</span> <span class="n">ContinueStmt</span><span class="p">(</span><span class="n">target_node</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stmt</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.gen_break_stmt">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_break_stmt">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_break_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BreakStmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生成break语句</span>
+<span class="sd">        :param target_node: break跳转到的目标节点</span>
+<span class="sd">        :return: break语句</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stmt</span> <span class="o">=</span> <span class="n">BreakStmt</span><span class="p">(</span><span class="n">target_node</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stmt</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.gen_goto_stmt">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_goto_stmt">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_goto_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GotoStmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生成跳转到目标代码块的指令序列</span>
+
+<span class="sd">        :param target_node: 目标节点</span>
+<span class="sd">        :return: 跳转到目标代码块的指令序列，包括goto指令</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">insns</span> <span class="o">=</span> <span class="n">target_node</span><span class="o">.</span><span class="n">insns</span>
+        <span class="k">assert</span> <span class="n">insns</span><span class="p">,</span> <span class="s2">&quot;目标代码块不能为空&quot;</span>
+
+        <span class="n">goto_stmt</span> <span class="o">=</span> <span class="n">GotoStmt</span><span class="p">(</span><span class="n">target_node</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+
+        <span class="n">stmt</span> <span class="o">=</span> <span class="n">insns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">Statement</span><span class="p">)</span>
+        <span class="n">stmt</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">goto_stmt</span><span class="o">.</span><span class="n">target_label</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goto_targets</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">target_node</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">goto_stmt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">goto_stmt</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.gen_if_stmt">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_if_stmt">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_if_stmt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cond</span><span class="p">:</span> <span class="n">Expression</span><span class="p">,</span>
+        <span class="n">true_body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">],</span>
+        <span class="n">false_body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IfStmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生成if-else语句的指令序列，true_body和false_body不能同时为空，否则会抛出ValueError。</span>
+<span class="sd">        若true_body为空，则会将条件取反。</span>
+
+<span class="sd">        :param cond: 条件表达式</span>
+<span class="sd">        :param true_body: 条件为真时的指令序列</span>
+<span class="sd">        :param false_body: 条件为假时的指令序列</span>
+<span class="sd">        :return: if-else语句的指令序列</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">true_body</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">true_body</span><span class="p">)</span>
+        <span class="n">false_body</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">false_body</span><span class="p">)</span> <span class="k">if</span> <span class="n">false_body</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">true_body</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">false_body</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;true_body和false_body不能同时为空&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">true_body</span><span class="p">:</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="n">cond</span><span class="o">.</span><span class="n">logical_not</span><span class="p">()</span>
+            <span class="n">true_body</span><span class="p">,</span> <span class="n">false_body</span> <span class="o">=</span> <span class="n">false_body</span><span class="p">,</span> <span class="n">true_body</span>
+
+        <span class="k">return</span> <span class="n">IfStmt</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">true_body</span><span class="p">,</span> <span class="n">false_body</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.gen_while_stmt">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_while_stmt">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_while_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">WhileStmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生成while语句</span>
+
+<span class="sd">        :param cond: 循环条件</span>
+<span class="sd">        :param body: 循环体</span>
+<span class="sd">        :return: while语句</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">WhileStmt</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">body</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.gen_do_while_stmt">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.gen_do_while_stmt">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_do_while_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DoWhileStmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生成do-while语句</span>
+
+<span class="sd">        :param cond: 循环条件</span>
+<span class="sd">        :param body: 循环体</span>
+<span class="sd">        :return: do-while语句</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DoWhileStmt</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">body</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.get_reduce_events">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.get_reduce_events">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_reduce_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;ReduceEvent&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取化简事件&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reduce_events</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.emit_reduce_event">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.emit_reduce_event">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">emit_reduce_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="s2">&quot;ReduceRule&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;添加化简事件&quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">ReduceEvent</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;化简: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_output_dir</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">and</span> <span class="n">rule</span> <span class="o">!=</span> <span class="n">ReduceRule</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reduce_events</span><span class="p">)</span>  <span class="c1"># 从1开始</span>
+            <span class="n">out_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">.png&quot;</span>
+            <span class="n">CFGDisplayer</span><span class="p">(</span><span class="n">CodeFormatter</span><span class="p">()</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">simplify</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">draw_cfg</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">out_path</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="p">]</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.bfs_traverse_loop">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.bfs_traverse_loop">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bfs_traverse_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">inspect_func</span><span class="p">,</span> <span class="n">loop</span><span class="p">:</span> <span class="n">Loop</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;广度优先遍历循环体，对每个节点调用inspect_func。</span>
+<span class="sd">        :param node: 遍历的起始节点</span>
+<span class="sd">        :param inspect_func: 检查函数，接受一个CFGNode参数，返回一个bool值</span>
+<span class="sd">        :param loop: 循环体</span>
+
+<span class="sd">        :return: 如果有节点被检查，则返回True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs_traverse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">inspect_func</span><span class="p">,</span> <span class="n">loop</span><span class="o">.</span><span class="n">body</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StructureConverterMixin.bfs_traverse">
+<a class="viewcode-back" href="../../../poredec.backend.html#poredec.backend.structure_converter_mixin.StructureConverterMixin.bfs_traverse">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bfs_traverse</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">operate_func</span><span class="p">,</span> <span class="n">white_list</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        广度优先遍历控制流图，对每个节点调用inspect_func。</span>
+<span class="sd">        :param node: 遍历的起始节点</span>
+<span class="sd">        :param operate_func: 检查函数，接受一个CFGNode参数，返回一个bool值</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">queue</span><span class="p">:</span> <span class="n">Queue</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">}</span>
+
+        <span class="n">any_true</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">curr_node</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">curr_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># inspect_func可以改变节点的后继节点</span>
+            <span class="k">if</span> <span class="n">operate_func</span><span class="p">(</span><span class="n">curr_node</span><span class="p">):</span>
+                <span class="n">any_true</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">curr_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">curr_node</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">visited</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_back_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">succ</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">white_list</span> <span class="ow">and</span> <span class="n">succ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">white_list</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">succ</span><span class="p">)</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">succ</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">any_true</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

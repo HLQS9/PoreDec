@@ -1,0 +1,739 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.models package &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="poredec.utils package" href="poredec.utils.html" />
+    <link rel="prev" title="poredec.frontend package" href="poredec.frontend.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="poredec.html">poredec package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.DecompileOptions"><code class="docutils literal notranslate"><span class="pre">DecompileOptions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.decompile"><code class="docutils literal notranslate"><span class="pre">decompile()</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="poredec.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="poredec.backend.html">poredec.backend package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.frontend.html">poredec.frontend package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">poredec.models package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.cfg">poredec.models.cfg module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.expr">poredec.models.expr module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.insn">poredec.models.insn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.lift_mode">poredec.models.lift_mode module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.loop">poredec.models.loop module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.reduce_event">poredec.models.reduce_event module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.models.stmt">poredec.models.stmt module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.utils.html">poredec.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="poredec.html">poredec package</a></li>
+      <li class="breadcrumb-item active">poredec.models package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/poredec.models.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-poredec.models">
+<span id="poredec-models-package"></span><h1>poredec.models package<a class="headerlink" href="#module-poredec.models" title="Link to this heading"></a></h1>
+<p>定义反编译器的数据模型</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-poredec.models.cfg">
+<span id="poredec-models-cfg-module"></span><h2>poredec.models.cfg module<a class="headerlink" href="#module-poredec.models.cfg" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.cfg.CFGNode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.cfg.</span></span><span class="sig-name descname"><span class="pre">CFGNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><span class="pre">Insn</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/cfg.html#CFGNode"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.CFGNode" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>表示控制流图的节点，节点包含一个基本块的所有指令</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> -- 节点地址</p></li>
+<li><p><strong>insns</strong> -- 节点包含的指令列表</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.cfg.CFGNode.address">
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#poredec.models.cfg.CFGNode.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.cfg.CFGNode.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><span class="pre">Insn</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/cfg.html#CFGNode.append"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.CFGNode.append" title="Link to this definition"></a></dt>
+<dd><p>在基本块末尾添加一条指令</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>insn</strong> -- 要添加的指令</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.cfg.CFGNode.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><span class="pre">Insn</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/cfg.html#CFGNode.extend"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.CFGNode.extend" title="Link to this definition"></a></dt>
+<dd><p>在基本块末尾添加给定列表的指令</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>insns</strong> -- 要添加的指令列表</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.cfg.CFGNode.insns">
+<span class="sig-name descname"><span class="pre">insns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><span class="pre">Insn</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#poredec.models.cfg.CFGNode.insns" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.cfg.CFGNode.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><span class="pre">Insn</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/cfg.html#CFGNode.reset"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.CFGNode.reset" title="Link to this definition"></a></dt>
+<dd><p>设置基本块的指令列表</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>insns</strong> -- 要设置的指令列表</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.cfg.ControlFlowGraph">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.cfg.</span></span><span class="sig-name descname"><span class="pre">ControlFlowGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/cfg.html#ControlFlowGraph"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.ControlFlowGraph" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code></p>
+<p>控制流图类，继承自networkx的DiGraph类
+控制流图的节点为基本块class:<cite>CFGNode</cite>，边表示控制流转移。</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> -- 控制流图的入口节点</p></li>
+<li><p><strong>lift_mode</strong> -- 控制流图的提升模式</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.cfg.ControlFlowGraph.find_node_by_addr">
+<span class="sig-name descname"><span class="pre">find_node_by_addr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/poredec/models/cfg.html#ControlFlowGraph.find_node_by_addr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.ControlFlowGraph.find_node_by_addr" title="Link to this definition"></a></dt>
+<dd><p>根据地址查找CFG中的节点，可以将地址映射到CFG中对应的基本块</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addr</strong> -- 要查找的地址</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含给定地址的节点，如果找不到则返回None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.cfg.ControlFlowGraph.get_node_by_addr">
+<span class="sig-name descname"><span class="pre">get_node_by_addr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/poredec/models/cfg.html#ControlFlowGraph.get_node_by_addr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.ControlFlowGraph.get_node_by_addr" title="Link to this definition"></a></dt>
+<dd><p>获取首地址为addr的节点</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addr</strong> -- 目标节点的地址</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>当控制流图中包含首地址为addr的节点，则返回该节点，否则返回None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.cfg.ControlFlowGraph.set_entry">
+<span class="sig-name descname"><span class="pre">set_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/cfg.html#ControlFlowGraph.set_entry"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.cfg.ControlFlowGraph.set_entry" title="Link to this definition"></a></dt>
+<dd><p>设置控制流图的入口节点</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>entry</strong> (class:<cite>CFGNode</cite>) -- 入口节点</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.models.expr">
+<span id="poredec-models-expr-module"></span><h2>poredec.models.expr module<a class="headerlink" href="#module-poredec.models.expr" title="Link to this heading"></a></h2>
+<p>本模块包含高级语言表达式的定义</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.expr.ConstExpr">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.expr.</span></span><span class="sig-name descname"><span class="pre">ConstExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/expr.html#ConstExpr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.ConstExpr" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a></p>
+<p>常量表达式</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.expr.ConstExpr.logical_not">
+<span class="sig-name descname"><span class="pre">logical_not</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/expr.html#ConstExpr.logical_not"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.ConstExpr.logical_not" title="Link to this definition"></a></dt>
+<dd><p>获取当前表达式的逻辑非表达式</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.expr.Expression">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.expr.</span></span><span class="sig-name descname"><span class="pre">Expression</span></span><a class="reference internal" href="_modules/poredec/models/expr.html#Expression"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.Expression" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>高级语言表达式</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.expr.Expression.logical_not">
+<span class="sig-name descname"><span class="pre">logical_not</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></span><a class="reference internal" href="_modules/poredec/models/expr.html#Expression.logical_not"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.Expression.logical_not" title="Link to this definition"></a></dt>
+<dd><p>获取当前表达式的逻辑非表达式</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.expr.NotExpr">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.expr.</span></span><span class="sig-name descname"><span class="pre">NotExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/expr.html#NotExpr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.NotExpr" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a></p>
+<p>逻辑非表达式</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.expr.VarExpr">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.expr.</span></span><span class="sig-name descname"><span class="pre">VarExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varnode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Varnode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/expr.html#VarExpr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.VarExpr" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a></p>
+<p>变量表达式</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.expr.VarExpr.fmt_vn">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fmt_vn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Varnode</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/poredec/models/expr.html#VarExpr.fmt_vn"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.expr.VarExpr.fmt_vn" title="Link to this definition"></a></dt>
+<dd><p>格式化Varnode</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.models.insn">
+<span id="poredec-models-insn-module"></span><h2>poredec.models.insn module<a class="headerlink" href="#module-poredec.models.insn" title="Link to this heading"></a></h2>
+<p>本模块定义了指令相关的类</p>
+<ul class="simple">
+<li><p>Insn: 指令基类</p></li>
+<li><p>PcodeInsn: Pcode指令</p></li>
+<li><p>DisasInsn: 反汇编指令</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.insn.DisasInsn">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.insn.</span></span><span class="sig-name descname"><span class="pre">DisasInsn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/insn.html#DisasInsn"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.insn.DisasInsn" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insn</span></code></a></p>
+<p>表示Capstone反汇编得到的指令
+:ivar address: 指令地址
+:ivar mnemonic: 指令助记符
+:ivar op_str: 指令操作数字符串
+:ivar size: 指令长度
+:ivar raw_bytes: 指令原始字节</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>is_ret</strong> -- 是否是返回指令</p></li>
+<li><p><strong>is_call</strong> -- 是否是调用指令</p></li>
+<li><p><strong>is_jump</strong> -- 是否是跳转指令</p></li>
+<li><p><strong>is_cond</strong> -- 是否是条件跳转指令</p></li>
+<li><p><strong>succs</strong> -- 后继指令地址列表</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.DisasInsn.address">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#poredec.models.insn.DisasInsn.address" title="Link to this definition"></a></dt>
+<dd><p>指令地址</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.insn.DisasInsn.from_cs_insn">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cs_insn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cs_insn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CsInsn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/insn.html#DisasInsn.from_cs_insn"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.insn.DisasInsn.from_cs_insn" title="Link to this definition"></a></dt>
+<dd><p>根据给定的Capstone指令创建一个LowInsn对象
+:param cs_insn: 给定的指令
+:type cs_insn: class:<cite>capstone.CsInsn</cite></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.DisasInsn.text">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#poredec.models.insn.DisasInsn.text" title="Link to this definition"></a></dt>
+<dd><p>指令字符串表示</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.insn.Insn">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.insn.</span></span><span class="sig-name descname"><span class="pre">Insn</span></span><a class="reference internal" href="_modules/poredec/models/insn.html#Insn"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.insn.Insn" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>指令基类</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.Insn.address">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#poredec.models.insn.Insn.address" title="Link to this definition"></a></dt>
+<dd><p>指令地址</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.Insn.text">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#poredec.models.insn.Insn.text" title="Link to this definition"></a></dt>
+<dd><p>指令字符串表示</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.insn.</span></span><span class="sig-name descname"><span class="pre">PcodeInsn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PcodeOp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disas_insn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.insn.DisasInsn" title="poredec.models.insn.DisasInsn"><span class="pre">DisasInsn</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/insn.html#PcodeInsn"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.insn.PcodeInsn" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insn</span></code></a></p>
+<p>Pcode指令</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>disas_insn</strong> -- 所属的反汇编指令</p></li>
+<li><p><strong>idx</strong> -- 指令索引</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn.address">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#poredec.models.insn.PcodeInsn.address" title="Link to this definition"></a></dt>
+<dd><p>指令地址</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn.inputs">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Varnode</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#poredec.models.insn.PcodeInsn.inputs" title="Link to this definition"></a></dt>
+<dd><p>P-code的输入变量列表</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn.opcode">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">opcode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">OpCode</span></em><a class="headerlink" href="#poredec.models.insn.PcodeInsn.opcode" title="Link to this definition"></a></dt>
+<dd><p>P-code的操作码</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn.output">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Varnode</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#poredec.models.insn.PcodeInsn.output" title="Link to this definition"></a></dt>
+<dd><p>P-code的输出变量</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn.pretty_printer">
+<span class="sig-name descname"><span class="pre">pretty_printer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;pypcode.PcodePrettyPrinter</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#poredec.models.insn.PcodeInsn.pretty_printer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.insn.PcodeInsn.text">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#poredec.models.insn.PcodeInsn.text" title="Link to this definition"></a></dt>
+<dd><p>指令字符串表示</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.models.lift_mode">
+<span id="poredec-models-lift-mode-module"></span><h2>poredec.models.lift_mode module<a class="headerlink" href="#module-poredec.models.lift_mode" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.lift_mode.LiftMode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.lift_mode.</span></span><span class="sig-name descname"><span class="pre">LiftMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/lift_mode.html#LiftMode"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.lift_mode.LiftMode" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>代码提升模式</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.lift_mode.LiftMode.HIGH">
+<span class="sig-name descname"><span class="pre">HIGH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#poredec.models.lift_mode.LiftMode.HIGH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.lift_mode.LiftMode.LOW">
+<span class="sig-name descname"><span class="pre">LOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#poredec.models.lift_mode.LiftMode.LOW" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.lift_mode.LiftMode.MEDIUM">
+<span class="sig-name descname"><span class="pre">MEDIUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#poredec.models.lift_mode.LiftMode.MEDIUM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.models.loop">
+<span id="poredec-models-loop-module"></span><h2>poredec.models.loop module<a class="headerlink" href="#module-poredec.models.loop" title="Link to this heading"></a></h2>
+<p>循环数据结构</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.loop.</span></span><span class="sig-name descname"><span class="pre">Loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">back_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#Loop"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.Loop" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>表示单个循环</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header</strong> -- 循环头</p></li>
+<li><p><strong>body</strong> -- 循环体，包含所有循环内的节点</p></li>
+<li><p><strong>back_edge</strong> -- 循环回边，由循环体中的某一节点指向循环头</p></li>
+<li><p><strong>parent</strong> -- 上一层父循环，如果循环A完全包含循环B的循环体，则A是B的parent(父循环)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop.back_edge">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">back_edge</span></span><a class="headerlink" href="#poredec.models.loop.Loop.back_edge" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop.body">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">body</span></span><a class="headerlink" href="#poredec.models.loop.Loop.body" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop.depth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">depth</span></span><a class="headerlink" href="#poredec.models.loop.Loop.depth" title="Link to this definition"></a></dt>
+<dd><p>循环的深度，即嵌套层数，从1开始计数</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop.get_predecessors">
+<span class="sig-name descname"><span class="pre">get_predecessors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/poredec/models/loop.html#Loop.get_predecessors"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.Loop.get_predecessors" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop.get_successors">
+<span class="sig-name descname"><span class="pre">get_successors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/poredec/models/loop.html#Loop.get_successors"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.Loop.get_successors" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.loop.Loop.header">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">header</span></span><a class="headerlink" href="#poredec.models.loop.Loop.header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.loop.LoopInfo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.loop.</span></span><span class="sig-name descname"><span class="pre">LoopInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scc_with_headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">back_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.loop.Loop" title="poredec.models.loop.Loop"><span class="pre">Loop</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#LoopInfo"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.LoopInfo" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>控制流图中的循环信息</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loops</strong> -- CFG中的所有循环</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.LoopInfo.get_loop_for">
+<span class="sig-name descname"><span class="pre">get_loop_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#LoopInfo.get_loop_for"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.LoopInfo.get_loop_for" title="Link to this definition"></a></dt>
+<dd><p>获取节点所在的最内层循环，如果节点不在任何循环内，则返回None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.LoopInfo.get_scc_for">
+<span class="sig-name descname"><span class="pre">get_scc_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#LoopInfo.get_scc_for"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.LoopInfo.get_scc_for" title="Link to this definition"></a></dt>
+<dd><p>获取节点所在的强连通分量</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.LoopInfo.get_scc_header_for">
+<span class="sig-name descname"><span class="pre">get_scc_header_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#LoopInfo.get_scc_header_for"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.LoopInfo.get_scc_header_for" title="Link to this definition"></a></dt>
+<dd><p>获取节点所在的强连通分量的头</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.LoopInfo.is_back_edge">
+<span class="sig-name descname"><span class="pre">is_back_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#LoopInfo.is_back_edge"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.LoopInfo.is_back_edge" title="Link to this definition"></a></dt>
+<dd><p>判断边是否是回边
+:param edge: (源节点, 目标节点)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.models.loop.LoopInfo.is_loop_header">
+<span class="sig-name descname"><span class="pre">is_loop_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/loop.html#LoopInfo.is_loop_header"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.loop.LoopInfo.is_loop_header" title="Link to this definition"></a></dt>
+<dd><p>判断节点是否是循环头</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.models.reduce_event">
+<span id="poredec-models-reduce-event-module"></span><h2>poredec.models.reduce_event module<a class="headerlink" href="#module-poredec.models.reduce_event" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceEvent">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.reduce_event.</span></span><span class="sig-name descname"><span class="pre">ReduceEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.reduce_event.ReduceRule" title="poredec.models.reduce_event.ReduceRule"><span class="pre">ReduceRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.cfg.CFGNode" title="poredec.models.cfg.CFGNode"><span class="pre">CFGNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/reduce_event.html#ReduceEvent"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.reduce_event.ReduceEvent" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>控制流图节点化简事件</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.reduce_event.</span></span><span class="sig-name descname"><span class="pre">ReduceRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/reduce_event.html#ReduceRule"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>表示代码结构化时使用的化简规则</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.DO_WHILE">
+<span class="sig-name descname"><span class="pre">DO_WHILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.DO_WHILE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.ENTER_LOOP">
+<span class="sig-name descname"><span class="pre">ENTER_LOOP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.ENTER_LOOP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.GOTO_BRANCH">
+<span class="sig-name descname"><span class="pre">GOTO_BRANCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.GOTO_BRANCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.GOTO_SEQUENCE">
+<span class="sig-name descname"><span class="pre">GOTO_SEQUENCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.GOTO_SEQUENCE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.GOTO_SWITCH">
+<span class="sig-name descname"><span class="pre">GOTO_SWITCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.GOTO_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.IF">
+<span class="sig-name descname"><span class="pre">IF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.IF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.IF_BREAK">
+<span class="sig-name descname"><span class="pre">IF_BREAK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.IF_BREAK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.IF_CONTINUE">
+<span class="sig-name descname"><span class="pre">IF_CONTINUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.IF_CONTINUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.IF_ELSE">
+<span class="sig-name descname"><span class="pre">IF_ELSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.IF_ELSE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.LEAVE_LOOP">
+<span class="sig-name descname"><span class="pre">LEAVE_LOOP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.LEAVE_LOOP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.NONE">
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.NONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.SEQUENCE">
+<span class="sig-name descname"><span class="pre">SEQUENCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.SEQUENCE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.SWITCH">
+<span class="sig-name descname"><span class="pre">SWITCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.models.reduce_event.ReduceRule.WHILE_TRUE">
+<span class="sig-name descname"><span class="pre">WHILE_TRUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#poredec.models.reduce_event.ReduceRule.WHILE_TRUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.models.stmt">
+<span id="poredec-models-stmt-module"></span><h2>poredec.models.stmt module<a class="headerlink" href="#module-poredec.models.stmt" title="Link to this heading"></a></h2>
+<p>(伪)高级语言代码语句</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.BreakStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">BreakStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#BreakStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.BreakStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">_BranchStmt</span></code></p>
+<p>表示一个break语句</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.ContinueStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">ContinueStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#ContinueStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.ContinueStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">_BranchStmt</span></code></p>
+<p>表示一个continue语句</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.DoWhileStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">DoWhileStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#DoWhileStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.DoWhileStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">_LoopStmt</span></code></p>
+<p>表示一个do while语句</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.GotoStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">GotoStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#GotoStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.GotoStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">_BranchStmt</span></code></p>
+<p>表示一个goto语句</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.IfStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">IfStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">false_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#IfStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.IfStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statement</span></code></a></p>
+<p>表示一个if-else语句</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.PcodeStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">PcodeStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.insn.PcodeInsn" title="poredec.models.insn.PcodeInsn"><span class="pre">PcodeInsn</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#PcodeStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.PcodeStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statement</span></code></a></p>
+<p>表示一个低级语言语句</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.stmt.PcodeStmt.address">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#poredec.models.stmt.PcodeStmt.address" title="Link to this definition"></a></dt>
+<dd><p>指令地址</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.stmt.PcodeStmt.inputs">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><a class="headerlink" href="#poredec.models.stmt.PcodeStmt.inputs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.stmt.PcodeStmt.opcode">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">opcode</span></span><a class="headerlink" href="#poredec.models.stmt.PcodeStmt.opcode" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.stmt.PcodeStmt.output">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#poredec.models.stmt.PcodeStmt.output" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.Statement">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">Statement</span></span><a class="reference internal" href="_modules/poredec/models/stmt.html#Statement"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.Statement" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.insn.Insn" title="poredec.models.insn.Insn"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insn</span></code></a></p>
+<p>表示一条高级语言语句</p>
+<dl class="field-list simple">
+<dt class="field-odd">变量<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>succ</strong> -- 当前语句的下一条语句</p></li>
+<li><p><strong>label</strong> -- 语句的标签，若为None则表示没有标签</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.stmt.Statement.address">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#poredec.models.stmt.Statement.address" title="Link to this definition"></a></dt>
+<dd><p>指令地址</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="poredec.models.stmt.Statement.text">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#poredec.models.stmt.Statement.text" title="Link to this definition"></a></dt>
+<dd><p>指令字符串表示</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.SwitchStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">SwitchStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cases</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#SwitchStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.SwitchStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statement</span></code></a></p>
+<p>表示一个switch语句</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.models.stmt.WhileStmt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.models.stmt.</span></span><span class="sig-name descname"><span class="pre">WhileStmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.models.expr.Expression" title="poredec.models.expr.Expression"><span class="pre">Expression</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#poredec.models.stmt.Statement" title="poredec.models.stmt.Statement"><span class="pre">Statement</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/models/stmt.html#WhileStmt"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.models.stmt.WhileStmt" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">_LoopStmt</span></code></p>
+<p>表示一个while语句</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="poredec.frontend.html" class="btn btn-neutral float-left" title="poredec.frontend package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="poredec.utils.html" class="btn btn-neutral float-right" title="poredec.utils package" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

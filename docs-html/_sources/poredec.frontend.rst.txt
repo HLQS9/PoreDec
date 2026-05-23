@@ -1,0 +1,34 @@
+poredec.frontend package
+========================
+
+.. automodule:: poredec.frontend
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+poredec.frontend.cfg\_builder module
+------------------------------------
+
+.. automodule:: poredec.frontend.cfg_builder
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.frontend.lifter module
+------------------------------
+
+.. automodule:: poredec.frontend.lifter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+poredec.frontend.loader module
+------------------------------
+
+.. automodule:: poredec.frontend.loader
+   :members:
+   :undoc-members:
+   :show-inheritance:

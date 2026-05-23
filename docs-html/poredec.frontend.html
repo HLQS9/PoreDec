@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.frontend package &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="poredec.models package" href="poredec.models.html" />
+    <link rel="prev" title="poredec.backend package" href="poredec.backend.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="poredec.html">poredec package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.DecompileOptions"><code class="docutils literal notranslate"><span class="pre">DecompileOptions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poredec.html#poredec.decompile"><code class="docutils literal notranslate"><span class="pre">decompile()</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="poredec.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="poredec.backend.html">poredec.backend package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">poredec.frontend package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.frontend.cfg_builder">poredec.frontend.cfg_builder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.frontend.lifter">poredec.frontend.lifter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-poredec.frontend.loader">poredec.frontend.loader module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.models.html">poredec.models package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poredec.utils.html">poredec.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="poredec.html">poredec package</a></li>
+      <li class="breadcrumb-item active">poredec.frontend package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/poredec.frontend.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-poredec.frontend">
+<span id="poredec-frontend-package"></span><h1>poredec.frontend package<a class="headerlink" href="#module-poredec.frontend" title="Link to this heading"></a></h1>
+<p>PoREDec反编译器前端</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-poredec.frontend.cfg_builder">
+<span id="poredec-frontend-cfg-builder-module"></span><h2>poredec.frontend.cfg_builder module<a class="headerlink" href="#module-poredec.frontend.cfg_builder" title="Link to this heading"></a></h2>
+<p>控制流图构建器</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.frontend.cfg_builder.CFGBuilder">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.frontend.cfg_builder.</span></span><span class="sig-name descname"><span class="pre">CFGBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.frontend.lifter.Lifter" title="poredec.frontend.lifter.Lifter"><span class="pre">Lifter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/frontend/cfg_builder.html#CFGBuilder"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.cfg_builder.CFGBuilder" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>控制流图构建器</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.frontend.cfg_builder.CFGBuilder.build_cfg">
+<span class="sig-name descname"><span class="pre">build_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_addr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></span><a class="reference internal" href="_modules/poredec/frontend/cfg_builder.html#CFGBuilder.build_cfg"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.cfg_builder.CFGBuilder.build_cfg" title="Link to this definition"></a></dt>
+<dd><p>从给定的函数起始地址开始，构建完整的函数控制流图。
+控制流图的节点为基本块class:<cite>CFGNode</cite>，边表示控制流转移。
+每个节点包含一到多条汇编指令class:<cite>DisasInsn</cite>。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>entry_addr</strong> -- 函数的起始地址</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>构建完成的控制流图</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.frontend.lifter">
+<span id="poredec-frontend-lifter-module"></span><h2>poredec.frontend.lifter module<a class="headerlink" href="#module-poredec.frontend.lifter" title="Link to this heading"></a></h2>
+<p>本模块基于capstone和pypcode提供了一个基础的代码提升器Lifter。
+Lifter可以将机器码指令提升为汇编指令，也可以将基于汇编指令的控制流图提升为基于Pcode指令或伪C代码语句的控制流图。</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.frontend.lifter.Lifter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.frontend.lifter.</span></span><span class="sig-name descname"><span class="pre">Lifter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#poredec.frontend.loader.ELFLoader" title="poredec.frontend.loader.ELFLoader"><span class="pre">ELFLoader</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/frontend/lifter.html#Lifter"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.lifter.Lifter" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>代码提升器</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loader</strong> -- ELF文件加载器，用于加载目标ELF文件</p>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">loader</span> <span class="o">=</span> <span class="n">ELFLoader</span><span class="p">(</span><span class="s2">&quot;test.elf&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lifter</span> <span class="o">=</span> <span class="n">Lifter</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">insn</span> <span class="o">=</span> <span class="n">Lifter</span><span class="o">.</span><span class="n">disassemble_at</span><span class="p">(</span><span class="mh">0xADD0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">insn</span><span class="p">)</span> <span class="c1"># 打印汇编指令</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 假定已经构建了一个基于汇编的控制流图cfg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">high_cfg</span> <span class="o">=</span> <span class="n">lifter</span><span class="o">.</span><span class="n">lift_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">target_mode</span><span class="o">=</span><span class="n">LiftMode</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">high_cfg</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">insns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># 打印伪高级语言语句</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="poredec.frontend.lifter.Lifter.ARCH_LANGUAGE">
+<span class="sig-name descname"><span class="pre">ARCH_LANGUAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;pypcode.ArchLanguage</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#poredec.frontend.lifter.Lifter.ARCH_LANGUAGE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.frontend.lifter.Lifter.disassemble_at">
+<span class="sig-name descname"><span class="pre">disassemble_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.insn.DisasInsn" title="poredec.models.insn.DisasInsn"><span class="pre">DisasInsn</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/poredec/frontend/lifter.html#Lifter.disassemble_at"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.lifter.Lifter.disassemble_at" title="Link to this definition"></a></dt>
+<dd><p>在给定的地址处反汇编一条指令</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addr</strong> -- 指令地址</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>反汇编得到的指令对象，如果地址无效或无法反汇编当前指令则返回None</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>LowInsn</cite></p>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">insn</span> <span class="o">=</span> <span class="n">cfg_builder</span><span class="o">.</span><span class="n">disassemble_at</span><span class="p">(</span><span class="mh">0x401000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="ow">not</span> <span class="n">insn</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;无法反汇编</span><span class="si">%#x</span><span class="s2">处指令&quot;</span><span class="p">,</span> <span class="mh">0x401000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">insn</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.frontend.lifter.Lifter.lift_cfg">
+<span class="sig-name descname"><span class="pre">lift_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="poredec.models.html#poredec.models.lift_mode.LiftMode" title="poredec.models.lift_mode.LiftMode"><span class="pre">LiftMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LiftMode.HIGH</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="poredec.models.html#poredec.models.cfg.ControlFlowGraph" title="poredec.models.cfg.ControlFlowGraph"><span class="pre">ControlFlowGraph</span></a></span></span><a class="reference internal" href="_modules/poredec/frontend/lifter.html#Lifter.lift_cfg"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.lifter.Lifter.lift_cfg" title="Link to this definition"></a></dt>
+<dd><p>将控制流图中的指令提升到更高级的指令/语句，并构建基于高级指令的控制流图</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> -- 待提升的控制流图</p></li>
+<li><p><strong>target_mode</strong> -- 目标指令/语句级别</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>提升后的控制流图</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-poredec.frontend.loader">
+<span id="poredec-frontend-loader-module"></span><h2>poredec.frontend.loader module<a class="headerlink" href="#module-poredec.frontend.loader" title="Link to this heading"></a></h2>
+<p>ELF加载器实现</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="poredec.frontend.loader.ArchitectureException">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.frontend.loader.</span></span><span class="sig-name descname"><span class="pre">ArchitectureException</span></span><a class="reference internal" href="_modules/poredec/frontend/loader.html#ArchitectureException"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.loader.ArchitectureException" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>当遇到不支持的架构时，抛出此异常</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="poredec.frontend.loader.ELFLoader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">poredec.frontend.loader.</span></span><span class="sig-name descname"><span class="pre">ELFLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/frontend/loader.html#ELFLoader"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.loader.ELFLoader" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ELF文件的加载器</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.frontend.loader.ELFLoader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/poredec/frontend/loader.html#ELFLoader.read"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.loader.ELFLoader.read" title="Link to this definition"></a></dt>
+<dd><p>从当前位置读取指定长度的数据。需要先通过 meth:<cite>seek</cite> 跳转到目标地址</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> -- 要读取的数据长度。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>读取的数据，如果当前段为空则返回 None。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="poredec.frontend.loader.ELFLoader.seek">
+<span class="sig-name descname"><span class="pre">seek</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vaddr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/poredec/frontend/loader.html#ELFLoader.seek"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#poredec.frontend.loader.ELFLoader.seek" title="Link to this definition"></a></dt>
+<dd><p>让加载器跳转到给定的虚拟程序地址
+:param vaddr: 虚拟程序地址</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="poredec.backend.html" class="btn btn-neutral float-left" title="poredec.backend package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="poredec.models.html" class="btn btn-neutral float-right" title="poredec.models package" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.models.loop &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.models.loop</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.models.loop 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">循环数据结构</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">ControlFlowGraph</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Loop&quot;</span><span class="p">,</span> <span class="s2">&quot;LoopInfo&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Loop">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.Loop">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Loop</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;表示单个循环</span>
+
+<span class="sd">    :ivar header: 循环头</span>
+<span class="sd">    :ivar body: 循环体，包含所有循环内的节点</span>
+<span class="sd">    :ivar back_edge: 循环回边，由循环体中的某一节点指向循环头</span>
+<span class="sd">    :ivar parent: 上一层父循环，如果循环A完全包含循环B的循环体，则A是B的parent(父循环)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">],</span> <span class="n">back_edge</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">,</span> <span class="n">CFGNode</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="n">header</span> <span class="o">==</span> <span class="n">back_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;header: </span><span class="si">{</span><span class="n">header</span><span class="si">}</span><span class="s2">, back_edge[1]: </span><span class="si">{</span><span class="n">back_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="n">body</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_edge</span> <span class="o">=</span> <span class="n">back_edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Loop</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">depth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;循环的深度，即嵌套层数，从1开始计数&quot;&quot;&quot;</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">curr_loop</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="n">curr_loop</span><span class="p">:</span>
+            <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">curr_loop</span> <span class="o">=</span> <span class="n">curr_loop</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">return</span> <span class="n">depth</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">back_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_back_edge</span>
+
+<div class="viewcode-block" id="Loop.get_predecessors">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.Loop.get_predecessors">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">ControlFlowGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]:</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">pred</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+                    <span class="n">preds</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">preds</span></div>
+
+
+<div class="viewcode-block" id="Loop.get_successors">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.Loop.get_successors">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_successors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">ControlFlowGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]:</span>
+        <span class="n">succs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">succ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+                    <span class="n">succs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">succ</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">succs</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_edge</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Loop(back_edge:</span><span class="si">{</span><span class="n">u</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#X</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#X</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_edge</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Loop</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_edge</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">back_edge</span></div>
+
+
+
+<div class="viewcode-block" id="LoopInfo">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.LoopInfo">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoopInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;控制流图中的循环信息</span>
+
+<span class="sd">    :ivar loops: CFG中的所有循环</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scc_with_headers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">]]],</span>
+        <span class="n">back_edges</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">,</span> <span class="n">CFGNode</span><span class="p">]],</span>
+        <span class="n">loops</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Loop</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sccs</span> <span class="o">=</span> <span class="p">{</span><span class="n">header</span><span class="p">:</span> <span class="n">body</span> <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">body</span> <span class="ow">in</span> <span class="n">scc_with_headers</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">back_edges</span> <span class="o">=</span> <span class="n">back_edges</span>
+        <span class="c1"># 把内层循环放在前面</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loops</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">loop</span><span class="p">:</span> <span class="n">loop</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LoopInfo.get_loop_for">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.LoopInfo.get_loop_for">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_loop_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">is_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取节点所在的最内层循环，如果节点不在任何循环内，则返回None&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_header</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loops</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">loop</span><span class="o">.</span><span class="n">header</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">loop</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loops</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">loop</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">loop</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="LoopInfo.get_scc_for">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.LoopInfo.get_scc_for">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scc_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取节点所在的强连通分量&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">scc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sccs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">scc</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">scc</span></div>
+
+
+<div class="viewcode-block" id="LoopInfo.get_scc_header_for">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.LoopInfo.get_scc_header_for">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scc_header_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取节点所在的强连通分量的头&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">body</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sccs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">body</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">header</span></div>
+
+
+<div class="viewcode-block" id="LoopInfo.is_loop_header">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.LoopInfo.is_loop_header">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_loop_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;判断节点是否是循环头&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">back_edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">back_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="LoopInfo.is_back_edge">
+<a class="viewcode-back" href="../../../poredec.models.html#poredec.models.loop.LoopInfo.is_back_edge">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_back_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">CFGNode</span><span class="p">,</span> <span class="n">CFGNode</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;判断边是否是回边</span>
+<span class="sd">        :param edge: (源节点, 目标节点)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_edges</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

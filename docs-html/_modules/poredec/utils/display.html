@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.utils.display &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.utils.display</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.utils.display 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">PcodeOp</span><span class="p">,</span> <span class="n">PcodePrettyPrinter</span><span class="p">,</span> <span class="n">OpCode</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pygraphviz</span><span class="w"> </span><span class="kn">import</span> <span class="n">AGraph</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;错误: 由于缺乏pygraphviz库不能保存CFG。请按照实验文档正确设置运行环境。&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">ControlFlowGraph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.expr</span><span class="w"> </span><span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">VarExpr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.insn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Insn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.stmt</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Statement</span><span class="p">,</span>
+    <span class="n">PcodeStmt</span><span class="p">,</span>
+    <span class="n">GotoStmt</span><span class="p">,</span>
+    <span class="n">ContinueStmt</span><span class="p">,</span>
+    <span class="n">BreakStmt</span><span class="p">,</span>
+    <span class="n">IfStmt</span><span class="p">,</span>
+    <span class="n">SwitchStmt</span><span class="p">,</span>
+    <span class="n">WhileStmt</span><span class="p">,</span>
+    <span class="n">DoWhileStmt</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.lift_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">LiftMode</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CodeFormatter&quot;</span><span class="p">,</span> <span class="s2">&quot;CFGDisplayer&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="CodeFormatter">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CodeFormatter">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CodeFormatter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;代码格式化工具，用于将指令、语句转化为文本&quot;&quot;&quot;</span>
+
+    <span class="n">INDENT</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span>
+
+    <span class="n">PPP</span> <span class="o">=</span> <span class="n">PcodePrettyPrinter</span><span class="p">()</span>
+    <span class="n">_no_pcode</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_simplify</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_no_pcode</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simplify</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CodeFormatter.configure">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CodeFormatter.configure">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_pcode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;全局配置</span>
+<span class="sd">        :param no_pcode: 是否不显示Pcode, 开启后格式化PcodeStmt时仅打印代码注释, 默认为False</span>
+<span class="sd">        :param simplify: 是否简化反编译结果，开启后仅保留控制流结构, 默认为False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_no_pcode</span> <span class="o">=</span> <span class="n">no_pcode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simplify</span> <span class="o">=</span> <span class="n">simplify</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="CodeFormatter.fmt_insns">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CodeFormatter.fmt_insns">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fmt_insns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">insns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Insn</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;格式化指令列表&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">insn</span> <span class="ow">in</span> <span class="n">insns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">insn</span><span class="p">,</span> <span class="n">Insn</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;错误: 预期Insn列表, 实际包含非指令对象 </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">insn</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">:</span><span class="s2">#08X</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">insn</span> <span class="ow">in</span> <span class="n">insns</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">INDENT</span><span class="si">}{</span><span class="n">insn</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="CodeFormatter.fmt_stmts">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CodeFormatter.fmt_stmts">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fmt_stmts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">],</span> <span class="n">lspace</span><span class="o">=</span><span class="n">INDENT</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;格式化语句列表&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">stmts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">Statement</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;错误: 预期Statement列表, 实际包含非指令对象 </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">last_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stmts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stmts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">PcodeStmt</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simplify</span><span class="p">:</span>
+                    <span class="n">stmt_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmts</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">PcodeStmt</span><span class="p">):</span>
+                        <span class="n">stmt_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lspace</span><span class="si">}</span><span class="s2">// 首指令地址: </span><span class="si">{</span><span class="n">stmt</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#X</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">last_idx</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">PcodeStmt</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">stmt_text</span><span class="p">:</span>
+                            <span class="n">stmt_text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="n">stmt_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lspace</span><span class="si">}</span><span class="s2">// 末指令地址: </span><span class="si">{</span><span class="n">stmt</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#X</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_pcode_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ContinueStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_continue_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">BreakStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_break_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">GotoStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_goto_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">IfStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_if_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">SwitchStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_switch_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">WhileStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_while_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">DoWhileStmt</span><span class="p">):</span>
+                <span class="n">stmt_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_do_while_stmt</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">lspace</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;未知语句类型: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">stmt_text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="n">stmt_text</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">text</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_pcode_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">PcodeStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">opcode</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">OpCode</span><span class="o">.</span><span class="n">BRANCH</span><span class="p">,</span>
+            <span class="n">OpCode</span><span class="o">.</span><span class="n">BRANCHIND</span><span class="p">,</span>
+            <span class="n">OpCode</span><span class="o">.</span><span class="n">CBRANCH</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_pcode</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="n">stmt</span><span class="o">.</span><span class="n">comment</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lspace</span><span class="si">}</span><span class="s2">// </span><span class="si">{</span><span class="n">stmt</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">comment</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_op</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">:</span> <span class="n">PcodeOp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PPP</span><span class="o">.</span><span class="n">OP_FORMATS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opcode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PPP</span><span class="o">.</span><span class="n">DEFAULT_OP_FORMAT</span><span class="p">)</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">fmt_vn</span> <span class="o">=</span> <span class="n">VarExpr</span><span class="o">.</span><span class="n">fmt_vn</span>  <span class="c1"># Monkey patch</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fmt</span><span class="o">.</span><span class="n">fmt_vn</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2"> = &quot;</span> <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">output</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">fmt</span><span class="o">.</span><span class="n">fmt</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_goto_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">GotoStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lspace</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;goto </span><span class="si">{</span><span class="n">stmt</span><span class="o">.</span><span class="n">target_label</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_continue_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">ContinueStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lspace</span> <span class="o">+</span> <span class="s2">&quot;continue&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_break_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">BreakStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lspace</span> <span class="o">+</span> <span class="s2">&quot;break&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_if_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">IfStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_expr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">cond</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;if (</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="o">+</span> <span class="s2">&quot; {</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt_stmts</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">true_body</span><span class="p">,</span> <span class="n">lspace</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">INDENT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">false_body</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="s2">&quot;} else {</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt_stmts</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">false_body</span><span class="p">,</span> <span class="n">lspace</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">INDENT</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_switch_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">SwitchStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_while_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">WhileStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_expr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">cond</span><span class="p">)</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt_stmts</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">lspace</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">INDENT</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;while (</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="o">+</span> <span class="s2">&quot; {</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="n">body</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_do_while_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">:</span> <span class="n">DoWhileStmt</span><span class="p">,</span> <span class="n">lspace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_expr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">cond</span><span class="p">)</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt_stmts</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">lspace</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">INDENT</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="s2">&quot;do {</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="n">body</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="n">lspace</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2"> while (</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s2">);&quot;</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">Expression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CFGDisplayer">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CFGDisplayer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CFGDisplayer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;控制流图可视化工具&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">:</span> <span class="n">CodeFormatter</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">formatter</span>
+
+<div class="viewcode-block" id="CFGDisplayer.draw_cfg">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CFGDisplayer.draw_cfg">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">ControlFlowGraph</span><span class="p">,</span> <span class="n">graph_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;把CFG图转化为PNG格式的图片，并保存到graph_path</span>
+
+<span class="sd">        :param cfg: 控制流图</span>
+<span class="sd">        :type cfg: class:`ControlFlowGraph`</span>
+<span class="sd">        :param graph_path: 图片保存路径</span>
+<span class="sd">        :param highlights: 高亮的节点地址列表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">agraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="c1"># 定制化图属性</span>
+        <span class="n">agraph</span><span class="o">.</span><span class="n">graph_attr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;TB&quot;</span><span class="p">,</span>  <span class="c1"># Top to bottom directed graph</span>
+                <span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fontcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#333333&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bgcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pad&quot;</span><span class="p">:</span> <span class="s2">&quot;0.5&quot;</span><span class="p">,</span>  <span class="c1"># Page padding</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 定制化节点属性</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">agraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">])</span>
+            <span class="n">fillcolor</span> <span class="o">=</span> <span class="s2">&quot;#cccccc&quot;</span> <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">highlights</span> <span class="k">else</span> <span class="s2">&quot;#d9ead3&quot;</span>
+            <span class="n">node_label</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">l&quot;</span><span class="p">)</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">node_label</span><span class="p">,</span>
+                    <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;filled&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="n">fillcolor</span><span class="p">,</span>
+                    <span class="s2">&quot;fontcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;fontname&quot;</span><span class="p">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 定制化边属性</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">agraph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#999999&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;arrowhead&quot;</span><span class="p">:</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="s2">&quot;8&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">edge</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">):</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># 使用graphviz包中的&#39;dot&#39;程序来绘制图片</span>
+        <span class="n">agraph</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">graph_path</span><span class="p">),</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="CFGDisplayer.format_cfg">
+<a class="viewcode-back" href="../../../poredec.utils.html#poredec.utils.display.CFGDisplayer.format_cfg">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">ControlFlowGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;将控制流图转化为文本形式</span>
+
+<span class="sd">        :param cfg: 控制流图</span>
+<span class="sd">        :return: 文本格式的控制流图，图中的每一个节点为对应控制流图节点的文本表示</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">class</span><span class="w"> </span><span class="nc">_CFGTextNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">lift_mode</span><span class="p">:</span> <span class="n">LiftMode</span><span class="p">,</span> <span class="n">formatter</span><span class="p">:</span> <span class="n">CodeFormatter</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">lift_mode</span> <span class="o">&lt;</span> <span class="n">LiftMode</span><span class="o">.</span><span class="n">HIGH</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">formatter</span><span class="o">.</span><span class="n">fmt_insns</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">insns</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">#08X</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">formatter</span><span class="o">.</span><span class="n">fmt_stmts</span><span class="p">(</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">insns</span>
+                    <span class="p">)</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">new_node</span> <span class="o">=</span> <span class="n">trans</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">_CFGTextNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">lift_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span><span class="p">)</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">new_node</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">trans</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">trans</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">to_agraph</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

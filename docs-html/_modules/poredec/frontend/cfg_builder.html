@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poredec.frontend.cfg_builder &mdash; PoREDec  文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2ccfc426"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PoREDec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../project.html">项目: 简易反编译器的实现</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">PoREDec反编译器概览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../poredec.html">poredec package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PoREDec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../../poredec.html">poredec</a></li>
+      <li class="breadcrumb-item active">poredec.frontend.cfg_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>poredec.frontend.cfg_builder 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">控制流图构建器</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="c1"># pylint: disable=unused-argument</span>
+<span class="c1"># pylint: disable=fixme</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.insn</span><span class="w"> </span><span class="kn">import</span> <span class="n">DisasInsn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFGNode</span><span class="p">,</span> <span class="n">ControlFlowGraph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.lifter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lifter</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CFGBuilder&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="CFGBuilder">
+<a class="viewcode-back" href="../../../poredec.frontend.html#poredec.frontend.cfg_builder.CFGBuilder">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CFGBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;控制流图构建器&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lifter</span><span class="p">:</span> <span class="n">Lifter</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lifter</span> <span class="o">=</span> <span class="n">lifter</span>  <span class="c1"># 反汇编器</span>
+
+<div class="viewcode-block" id="CFGBuilder.build_cfg">
+<a class="viewcode-back" href="../../../poredec.frontend.html#poredec.frontend.cfg_builder.CFGBuilder.build_cfg">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry_addr</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlFlowGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;从给定的函数起始地址开始，构建完整的函数控制流图。</span>
+<span class="sd">        控制流图的节点为基本块class:`CFGNode`，边表示控制流转移。</span>
+<span class="sd">        每个节点包含一到多条汇编指令class:`DisasInsn`。</span>
+
+<span class="sd">        :param entry_addr: 函数的起始地址</span>
+<span class="sd">        :return: 构建完成的控制流图</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 创建一个空的控制流图</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">ControlFlowGraph</span><span class="p">()</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        步骤1: 从入口地址开始反汇编，依次获取所有指令</span>
+<span class="sd">        下面代码演示了如何在给定地址(addr)处反汇编一条指令</span>
+<span class="sd">        &gt;&gt;&gt; insn = self.lifter.disassemble_at(addr)</span>
+<span class="sd">        insn中包含了反汇编得到的指令信息，例如insn.succs表示该指令后继指令地址列表。更多信息见class:`DisasInsn`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">insns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DisasInsn</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># TODO: 实现步骤1</span>
+        <span class="n">insns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lifter</span><span class="o">.</span><span class="n">disassemble_at</span><span class="p">(</span><span class="n">entry_addr</span><span class="p">))</span>  <span class="c1"># 本行代码仅用于演示</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        步骤2: 识别基本块的起始指令和终止指令。</span>
+<span class="sd">        起始指令：有&gt;1或0条前继指令，或前继指令中包含终止指令</span>
+<span class="sd">        终止指令：有&gt;1或0条后继指令，或后继指令中包含起始指令</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现步骤2</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        步骤3: 构造基本块, 基本块包含从起始指令到下一条终止指令间的所有指令。</span>
+<span class="sd">        下面代码演示了如何创建一个基本块, node_insns为基本块中的所有指令</span>
+<span class="sd">        &gt;&gt;&gt; node_addr = node_insns[0].address # 获取基本块的起始地址</span>
+<span class="sd">        &gt;&gt;&gt; node = CFGNode(node_addr, node_insns) # 创建基本块</span>
+<span class="sd">        创建的基本块可以通过下面代码添加到控制流图中</span>
+<span class="sd">        &gt;&gt;&gt; cfg.add_node(node)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现步骤3</span>
+        <span class="n">entry_node</span> <span class="o">=</span> <span class="n">CFGNode</span><span class="p">(</span><span class="n">entry_addr</span><span class="p">,</span> <span class="n">insns</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">entry_node</span><span class="p">)</span>  <span class="c1"># 本行代码仅用于演示</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        步骤4: 根据控制流连接基本块</span>
+<span class="sd">        下面代码演示了如何添加控制流图的边</span>
+<span class="sd">        &gt;&gt;&gt; cfg.add_edge(u, v) # 添加一条从u到v的边</span>
+<span class="sd">        &gt;&gt;&gt; cfg.add_edge(u, v, label=&quot;T&quot;) # 可以指定边的标签，标签会在画图时显示</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现步骤4</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        步骤5: 设置控制流图的入口节点</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: 实现步骤5: 只需要调用cfg.set_entry方法设置控制流图的入口节点</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">set_entry</span><span class="p">(</span><span class="n">entry_node</span><span class="p">)</span>  <span class="c1"># 本行代码仅用于演示</span>
+
+        <span class="k">assert</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;控制流图中没有节点&quot;</span>
+        <span class="k">assert</span> <span class="n">cfg</span><span class="o">.</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;需要设置控制流图的入口节点&quot;</span>
+        <span class="k">return</span> <span class="n">cfg</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Haoyu Xiao。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+poredec package
+===============
+
+.. automodule:: poredec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 3
+
+   poredec.backend
+   poredec.frontend
+   poredec.models
+   poredec.utils

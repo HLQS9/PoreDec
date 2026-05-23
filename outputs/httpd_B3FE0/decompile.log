@@ -1,0 +1,184 @@
+HACK-change: ['0xb400c', '0xb4050']
+[1] 化简: REDUCE#SEQUENCE@0XB3FFC
+HACK-change: ['0xb4044']
+删除化简的孤立节点: 0XB4018
+删除化简的孤立节点: 0XB4028
+[2] 化简: REDUCE#IF_BREAK@0XB400C
+[3] 化简: REDUCE#ENTER_LOOP@0XB4044
+HACK-change: ['0xb400c']
+[4] 化简: REDUCE#IF_BREAK@0XB4044
+HACK-change: ['0xb400c']
+删除化简的孤立节点: 0XB4044
+[5] 化简: REDUCE#SEQUENCE@0XB400C
+HACK-change: []
+删除化简的孤立节点: 0XB4044
+[6] 化简: REDUCE#WHILE_TRUE@0XB4044
+[7] 化简: REDUCE#LEAVE_LOOP@0XB4044
+HACK-change: []
+[8] 化简: REDUCE#WHILE_TRUE@0XB400C
+HACK-change: []
+[9] 化简: REDUCE#GOTO_BRANCH@0XB3FE0
+HACK-change: []
+[10] 化简: REDUCE#GOTO_BRANCH@0XB3FF0
+HACK-change: []
+[11] 化简: REDUCE#GOTO_BRANCH@0XB3FFC
+替换goto语句: 0XB3FFC[pos:0,size:1] -> 0XB400C[size:1]
+替换goto语句: 0XB3FF0[pos:0,size:1] -> 0XB3FFC[size:26]
+替换goto语句: 0XB3FE0[pos:0,size:1] -> 0XB3FF0[size:21]
+添加未合并的goto_target: 0XB4050
+HACK-change: ['0x48568', '0x4857c']
+[1] 化简: REDUCE#SEQUENCE@0X4855C
+[2] 化简: REDUCE#ENTER_LOOP@0X48568
+HACK-change: ['0x4857c']
+[3] 化简: REDUCE#DO_WHILE@0X48568
+[4] 化简: REDUCE#LEAVE_LOOP@0X48568
+HACK-change: ['0x4857c']
+删除化简的孤立节点: 0X48568
+[5] 化简: REDUCE#IF@0X4855C
+HACK-change: []
+删除化简的孤立节点: 0X4857C
+[6] 化简: REDUCE#SEQUENCE@0X4855C
+HACK-change: ['0x219b0', '0x219a0']
+[1] 化简: REDUCE#SEQUENCE@0X21990
+HACK-change: ['0x21994']
+删除化简的孤立节点: 0X219AC
+[2] 化简: REDUCE#IF_BREAK@0X219A0
+[3] 化简: REDUCE#ENTER_LOOP@0X21994
+HACK-change: ['0x219a0']
+[4] 化简: REDUCE#IF_BREAK@0X21994
+HACK-change: ['0x219a0']
+删除化简的孤立节点: 0X21994
+[5] 化简: REDUCE#SEQUENCE@0X219A0
+HACK-change: []
+删除化简的孤立节点: 0X21994
+[6] 化简: REDUCE#WHILE_TRUE@0X21994
+[7] 化简: REDUCE#LEAVE_LOOP@0X21994
+HACK-change: []
+[8] 化简: REDUCE#WHILE_TRUE@0X219A0
+HACK-change: []
+[9] 化简: REDUCE#GOTO_BRANCH@0X21974
+HACK-change: []
+[10] 化简: REDUCE#GOTO_BRANCH@0X21990
+替换goto语句: 0X21990[pos:0,size:1] -> 0X219B0[size:29]
+替换goto语句: 0X21990[pos:0,size:1] -> 0X219A0[size:1]
+替换goto语句: 0X21974[pos:0,size:1] -> 0X219BC[size:27]
+替换goto语句: 0X21974[pos:0,size:1] -> 0X21990[size:15]
+HACK-change: ['0x209c8', '0x20aa0']
+[1] 化简: REDUCE#SEQUENCE@0X209AC
+HACK-change: ['0x209d0', '0x209f8']
+[2] 化简: REDUCE#SEQUENCE@0X209C8
+[3] 化简: REDUCE#ENTER_LOOP@0X209D0
+HACK-change: ['0x209f8']
+[4] 化简: REDUCE#DO_WHILE@0X209D0
+HACK-change: ['0x20a94']
+[5] 化简: REDUCE#SEQUENCE@0X20A34
+[6] 化简: REDUCE#ENTER_LOOP@0X20A94
+HACK-change: ['0x209c8']
+[7] 化简: REDUCE#IF_BREAK@0X20A94
+HACK-change: ['0x209f8']
+删除化简的孤立节点: 0X209D0
+[8] 化简: REDUCE#IF@0X209C8
+HACK-change: ['0x209c8']
+[9] 化简: REDUCE#SEQUENCE@0X20A34
+HACK-change: ['0x20a90']
+[10] 化简: REDUCE#SEQUENCE@0X20A68
+HACK-change: ['0x20a8c']
+删除化简的孤立节点: 0X20A4C
+[11] 化简: REDUCE#SEQUENCE@0X20A30
+HACK-change: ['0x209c8']
+删除化简的孤立节点: 0X20A94
+[12] 化简: REDUCE#SEQUENCE@0X20A90
+HACK-change: ['0x209c8']
+[13] 化简: REDUCE#SEQUENCE@0X20A8C
+HACK-change: []
+删除化简的孤立节点: 0X20A94
+[14] 化简: REDUCE#WHILE_TRUE@0X20A94
+[15] 化简: REDUCE#LEAVE_LOOP@0X20A94
+HACK-change: ['0x209c8']
+删除化简的孤立节点: 0X20A90
+[16] 化简: REDUCE#SEQUENCE@0X20A68
+HACK-change: ['0x209c8']
+删除化简的孤立节点: 0X20A8C
+[17] 化简: REDUCE#SEQUENCE@0X20A30
+HACK-change: ['0x20a34', '0x20a28']
+删除化简的孤立节点: 0X209F8
+[18] 化简: REDUCE#SEQUENCE@0X209C8
+[19] 化简: REDUCE#LEAVE_LOOP@0X209D0
+HACK-change: ['0x20a34', '0x20a28']
+[20] 化简: REDUCE#SEQUENCE@0X20A34
+HACK-change: ['0x209c8']
+删除化简的孤立节点: 0X20A30
+删除化简的孤立节点: 0X20A68
+[21] 化简: REDUCE#IF_ELSE@0X20A28
+HACK-change: ['0x20a28']
+[22] 化简: REDUCE#DO_WHILE@0X20A34
+HACK-change: ['0x20a34', '0x20a28']
+[23] 化简: REDUCE#SEQUENCE@0X20A28
+HACK-change: ['0x20a28']
+[24] 化简: REDUCE#IF@0X209C8
+HACK-change: ['0x20a34']
+[25] 化简: REDUCE#DO_WHILE@0X20A28
+HACK-change: ['0x20a34']
+[26] 化简: REDUCE#SEQUENCE@0X20A34
+HACK-change: ['0x20a34']
+删除化简的孤立节点: 0X20A28
+[27] 化简: REDUCE#SEQUENCE@0X209C8
+HACK-change: []
+[28] 化简: REDUCE#WHILE_TRUE@0X20A34
+HACK-change: []
+删除化简的孤立节点: 0X20A34
+[29] 化简: REDUCE#SEQUENCE@0X209C8
+HACK-change: []
+[30] 化简: REDUCE#GOTO_BRANCH@0X209AC
+替换goto语句: 0X209AC[pos:0,size:1] -> 0X209C8[size:219]
+替换goto语句: 0X209AC[pos:0,size:1] -> 0X20AA0[size:38]
+HACK-change: ['0x4e95c', '0x4e9d4']
+[1] 化简: REDUCE#SEQUENCE@0X4E944
+HACK-change: ['0x4e970']
+删除化简的孤立节点: 0X4E9DC
+[2] 化简: REDUCE#IF_BREAK@0X4E95C
+HACK-change: []
+[3] 化简: REDUCE#SEQUENCE@0X4E9D4
+HACK-change: ['0x4e988']
+删除化简的孤立节点: 0X4E9E4
+[4] 化简: REDUCE#IF_BREAK@0X4E970
+HACK-change: ['0x4e99c', '0x4e9c8']
+[5] 化简: REDUCE#SEQUENCE@0X4E988
+HACK-change: ['0x4e9b8']
+删除化简的孤立节点: 0X4E9EC
+[6] 化简: REDUCE#IF_BREAK@0X4E99C
+[7] 化简: REDUCE#ENTER_LOOP@0X4E9C8
+HACK-change: ['0x4e95c']
+[8] 化简: REDUCE#IF_BREAK@0X4E9C8
+HACK-change: ['0x4e988']
+删除化简的孤立节点: 0X4E970
+[9] 化简: REDUCE#SEQUENCE@0X4E95C
+HACK-change: ['0x4e9c8']
+[10] 化简: REDUCE#IF_BREAK@0X4E988
+HACK-change: ['0x4e988']
+[11] 化简: REDUCE#SEQUENCE@0X4E9C8
+HACK-change: ['0x4e988']
+[12] 化简: REDUCE#SEQUENCE@0X4E988
+HACK-change: ['0x4e988']
+[13] 化简: REDUCE#SEQUENCE@0X4E9C8
+HACK-change: []
+[14] 化简: REDUCE#WHILE_TRUE@0X4E988
+HACK-change: []
+[15] 化简: REDUCE#SEQUENCE@0X4E9C8
+HACK-change: []
+[16] 化简: REDUCE#WHILE_TRUE@0X4E9C8
+[17] 化简: REDUCE#LEAVE_LOOP@0X4E9C8
+HACK-change: ['0x4e99c', '0x4e9c8']
+删除化简的孤立节点: 0X4E9BC
+[18] 化简: REDUCE#SEQUENCE@0X4E9B8
+HACK-change: []
+删除化简的孤立节点: 0X4E988
+[19] 化简: REDUCE#SEQUENCE@0X4E95C
+HACK-change: []
+[20] 化简: REDUCE#GOTO_BRANCH@0X4E934
+HACK-change: []
+[21] 化简: REDUCE#GOTO_BRANCH@0X4E944
+替换goto语句: 0X4E944[pos:0,size:1] -> 0X4E95C[size:62]
+替换goto语句: 0X4E944[pos:0,size:1] -> 0X4E9D4[size:40]
+替换goto语句: 0X4E934[pos:0,size:1] -> 0X4E9F0[size:27]
+替换goto语句: 0X4E934[pos:0,size:1] -> 0X4E944[size:33]
